@@ -19,7 +19,7 @@ export default function Home() {
                 width: 250,
               }}
               alt='FastAPI'
-              src='public/fastapi.png'
+              src='fastapi.png'
             />
           </Link>
 
@@ -36,7 +36,7 @@ export default function Home() {
                   mr: 1,
                 }}
                 alt='ReactIcon'
-                src='public/react.svg'
+                src='react.svg'
               />
               <Typography variant='h3' align='center' color='rgb(97, 218, 251)'>
                 React
@@ -56,7 +56,7 @@ export default function Home() {
                 width: 250,
               }}
               alt='MongoDB'
-              src='public/mongodb.png'
+              src='mongodb.png'
             />
           </Link>
 
@@ -72,14 +72,10 @@ export default function Home() {
                 width: 250,
               }}
               alt='Docker'
-              src='public/docker.png'
+              src='docker.png'
             />
           </Link>
         </Box>
-
-        {/* <Typography component='h1' variant='h2' align='center' color='text.primary' gutterBottom>
-          FastAPI + React + MongoDB + Docker
-        </Typography> */}
         <Typography variant='h3' align='center' color='text.secondary' sx={{ mt: 5 }}>
           = FARMD
         </Typography>

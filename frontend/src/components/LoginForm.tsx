@@ -10,16 +10,31 @@ import {
   Grid,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import authService from '../services/auth.service';
+import { useSnackBar } from '../contexts/snackbar';
 
 export default function LoginForm() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const navigate = useNavigate();
+  const { showSnackBar } = useSnackBar();
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
       email: data.get('email'),
       password: data.get('password'),
     });
+
+    try {
+      const response = await authService.login(data);
+      console.log(response);
+      showSnackBar('Login successful.', 'success', 3000);
+      navigate('/');
+    } catch (error) {
+      console.log(error.message);
+      showSnackBar(error.message, 'error', 3000);
+    }
   };
 
   return (
@@ -44,7 +59,7 @@ export default function LoginForm() {
           fullWidth
           id='email'
           label='Email Address'
-          name='email'
+          name='username'
           autoComplete='email'
           autoFocus
         />

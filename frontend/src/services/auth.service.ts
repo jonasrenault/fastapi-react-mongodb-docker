@@ -32,6 +32,11 @@ class AuthService {
 
     return response.data;
   }
+
+  async login(data: FormData) {
+    const response = await axios.post(API_URL + 'login/access-token', data);
+    return response.data;
+  }
 }
 
 export default new AuthService();

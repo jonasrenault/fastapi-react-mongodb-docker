@@ -2,7 +2,6 @@ from typing import List, Optional, Any
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Body, Depends
-from fastapi.encoders import jsonable_encoder
 from pymongo import errors
 from pydantic.networks import EmailStr
 
