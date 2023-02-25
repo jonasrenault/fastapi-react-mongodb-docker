@@ -11,6 +11,11 @@ import Login from './routes/login';
 import Register from './routes/register';
 import Home from './routes/home';
 
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+
 const router = createBrowserRouter([
   {
     path: '/',
