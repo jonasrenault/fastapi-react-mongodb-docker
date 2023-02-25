@@ -25,10 +25,6 @@ class Settings(BaseSettings):
 
     PROJECT_NAME: str
 
-    # JWT
-    # secret_key: str
-    algorithm: str = "HS256"
-
     class Config:
         env_file = ".env.dev"
         # orm_mode = True
