@@ -38,7 +38,7 @@ export default function Home() {
                 alt='ReactIcon'
                 src='public/react.svg'
               />
-              <Typography component='h3' variant='h3' align='center' color='rgb(97, 218, 251)'>
+              <Typography variant='h3' align='center' color='rgb(97, 218, 251)'>
                 React
               </Typography>
             </Box>
@@ -80,10 +80,10 @@ export default function Home() {
         {/* <Typography component='h1' variant='h2' align='center' color='text.primary' gutterBottom>
           FastAPI + React + MongoDB + Docker
         </Typography> */}
-        <Typography variant='h4' align='center' color='text.secondary' sx={{ mt: 6 }}>
+        <Typography variant='h3' align='center' color='text.secondary' sx={{ mt: 5 }}>
           = FARMD
         </Typography>
-        <Stack sx={{ pt: 4 }} direction='row' spacing={2} justifyContent='center'>
+        <Stack sx={{ pt: 5 }} direction='row' spacing={2} justifyContent='center'>
           <Button variant='contained' component={RouterLink} to='/login'>
             Login
           </Button>
