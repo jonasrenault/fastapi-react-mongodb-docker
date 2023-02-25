@@ -1,0 +1,12 @@
+FROM node:19-slim
+WORKDIR /app
+
+COPY package*.json /app/
+
+RUN npm ci
+
+COPY ./ /app/
+
+ARG FRONTEND_ENV=production
+
+ENV VITE_APP_ENV=${FRONTEND_ENV}
