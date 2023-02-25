@@ -1,60 +1,62 @@
-import {
-  createContext,
-  useState,
-  useMemo,
-  useCallback,
-  ReactNode,
-  useEffect,
-  useRef,
-  FC,
-} from 'react';
+import { Alert, AlertColor, Snackbar } from '@mui/material';
+import { createContext, FC, useState, ReactNode, useContext } from 'react';
 
-export type SnackBarType = {
-  content: ReactNode;
-  autoHide?: boolean;
+type SnackBarContextActions = {
+  showSnackBar: (message: string, severity: AlertColor, timeout?: number) => void;
 };
 
-export type SnackBarContextType = {
-  snackBar: SnackBarType | undefined;
-  isOpen?: boolean;
-  createSnackBar: (snackbar: SnackBarType) => void;
-  closeSnackBar?: () => void;
-};
+const SnackBarContext = createContext<SnackBarContextActions>({} as SnackBarContextActions);
 
-export const SnackBarContext = createContext<SnackBarContextType | undefined>(undefined);
+interface SnackBarContextProviderProps {
+  children: ReactNode;
+}
 
-export const SnackBarProvider: FC = ({ children }) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [snackBar, setSnackBar] = useState<SnackBarType | undefined>(undefined);
-  const timeout = useRef(0);
-  const createSnackBar = useCallback((snackbar: SnackBarType) => {
-    setSnackBar(snackbar);
-    setIsOpen(true);
-  }, []);
+const SnackBarProvider: FC<SnackBarContextProviderProps> = ({ children }) => {
+  const [open, setOpen] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>('');
+  const [timeout, setTimeout] = useState<number>(6000);
+  const [alertColor, setAlertColor] = useState<AlertColor>('info');
 
-  const closeSnackBar = useCallback(() => {
-    setSnackBar(undefined);
-    setIsOpen(false);
-  }, []);
-
-  const context = useMemo(
-    () => ({
-      isOpen,
-      snackBar,
-      createSnackBar,
-      closeSnackBar,
-    }),
-    [isOpen, snackBar, createSnackBar, closeSnackBar],
-  );
-
-  useEffect(() => {
-    if (snackBar && snackBar.autoHide) {
-      timeout.current = window.setTimeout(() => {
-        setIsOpen(false);
-        setSnackBar(undefined);
-      }, 4000);
+  const showSnackBar = (text: string, color: AlertColor, timeout?: number) => {
+    setMessage(text);
+    setAlertColor(color);
+    setOpen(true);
+    if (timeout) {
+      setTimeout(timeout);
     }
-  }, [snackBar, timeout]);
+  };
 
-  return <SnackBarContext.Provider value={context}>{children}</SnackBarContext.Provider>;
+  const handleClose = () => {
+    setOpen(false);
+    setAlertColor('info');
+    setTimeout(6000);
+  };
+
+  return (
+    <SnackBarContext.Provider value={{ showSnackBar }}>
+      <Snackbar
+        open={open}
+        autoHideDuration={timeout}
+        // anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        onClose={handleClose}
+      >
+        <Alert onClose={handleClose} severity={alertColor}>
+          {message}
+        </Alert>
+      </Snackbar>
+      {children}
+    </SnackBarContext.Provider>
+  );
 };
+
+const useSnackBar = (): SnackBarContextActions => {
+  const context = useContext(SnackBarContext);
+
+  if (!context) {
+    throw new Error('useSnackBar must be used within a SnackBarProvider');
+  }
+
+  return context;
+};
+
+export { SnackBarProvider, useSnackBar };

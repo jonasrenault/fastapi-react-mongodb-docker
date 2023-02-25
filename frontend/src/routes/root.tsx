@@ -3,7 +3,6 @@ import { Outlet } from 'react-router-dom';
 import TopMenuBar from '../components/TopMenuBar';
 import { Box, Toolbar } from '@mui/material';
 import { SnackBarProvider } from '../contexts/snackbar';
-import AlertSnackBar from '../components/AlertSnackBar';
 
 export default function Root() {
   return (
@@ -22,7 +21,6 @@ export default function Root() {
         >
           <Toolbar></Toolbar>
           <Outlet />
-          <AlertSnackBar></AlertSnackBar>
         </Box>
       </Box>
     </SnackBarProvider>

@@ -1,23 +1,12 @@
-import { useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { Avatar, Button, TextField, Link, Grid, Box, Typography, Snackbar } from '@mui/material';
+import { Avatar, Button, TextField, Link, Grid, Box, Typography } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import authService from '../services/auth.service';
-
-export interface State extends SnackbarOrigin {
-  open: boolean;
-  message: string;
-  severity: string;
-}
+import { useSnackBar } from '../contexts/snackbar';
 
 export default function RegisterForm() {
   const navigate = useNavigate();
-  const [state, setState] = useState<State>({
-    open: false,
-    message: 'Registration sucessfull',
-    severity: 'success',
-  });
-  const { open, message, severity } = state;
+  const { showSnackBar } = useSnackBar();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -26,16 +15,12 @@ export default function RegisterForm() {
     try {
       const response = await authService.register(userData);
       console.log(response);
-      setState({ open: true, message: 'Registration successful.', severity: 'success' });
+      showSnackBar('Registration successful.', 'success', 3000);
       navigate('/login');
     } catch (error) {
       console.log(error.message);
-      setState({ open: true, message: error.message, severity: 'error' });
+      showSnackBar(error.message, 'error', 3000);
     }
-  };
-
-  const handleClose = () => {
-    setState({ ...state, open: false });
   };
 
   return (
@@ -111,14 +96,6 @@ export default function RegisterForm() {
           </Grid>
         </Box>
       </Box>
-      <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        message={message}
-        severity={severity}
-        // action={action}
-      />
     </div>
   );
 }
