@@ -2,7 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import Root from './routes/root';
 import Home from './routes/home';
 import ErrorPage from './error-page';
-import { Profile, loader as profileLoader } from './routes/profile';
+import { Profile } from './routes/profile';
 import Login from './routes/login';
 import Register from './routes/register';
 
@@ -16,7 +16,6 @@ export const router = createBrowserRouter([
       {
         path: 'profile',
         element: <Profile />,
-        loader: profileLoader,
       },
       {
         path: 'login',
