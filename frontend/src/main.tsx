@@ -5,6 +5,7 @@ import Root from './routes/root';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
+import { setAuthToken } from './services/auth.service';
 import ErrorPage from './error-page';
 import Profile from './routes/profile';
 import Login from './routes/login';
@@ -47,3 +48,9 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     </ThemeProvider>
   </React.StrictMode>,
 );
+
+//check jwt token
+const token = localStorage.getItem('token');
+if (token) {
+  setAuthToken(token);
+}
