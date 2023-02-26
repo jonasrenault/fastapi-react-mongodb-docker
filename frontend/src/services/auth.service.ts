@@ -9,12 +9,6 @@ interface UserRegister {
   password: string;
 }
 
-export const setAuthToken = (token) => {
-  if (token) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  } else delete axios.defaults.headers.common['Authorization'];
-};
-
 class AuthService {
   async register(user: UserRegister) {
     if (!(user.firstName && user.firstName.length > 0)) {
@@ -43,7 +37,6 @@ class AuthService {
     const response = await axios.post(API_URL + 'login/access-token', data);
     if (response.data.access_token) {
       localStorage.setItem('token', response.data.access_token);
-      setAuthToken(response.data.access_token);
     }
     return response.data;
   }

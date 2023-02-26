@@ -1,12 +1,18 @@
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
+import { useLoaderData } from 'react-router-dom';
+import { Container, Grid, Paper } from '@mui/material';
+import userService from '../services/user.service';
 
-export default function Profile() {
+export async function loader() {
+  const userProfile = await userService.getProfile();
+  return { userProfile };
+}
+
+export function Profile() {
+  const { userProfile } = useLoaderData();
+  console.log(userProfile);
   return (
     <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>
       <Grid container spacing={3}>
-        {/* Chart */}
         <Grid item xs={12} md={8} lg={9}>
           <Paper
             sx={{
@@ -19,7 +25,6 @@ export default function Profile() {
             Some text
           </Paper>
         </Grid>
-        {/* Recent Deposits */}
         <Grid item xs={12} md={4} lg={3}>
           <Paper
             sx={{
@@ -32,7 +37,6 @@ export default function Profile() {
             Some other text
           </Paper>
         </Grid>
-        {/* Recent Orders */}
         <Grid item xs={12}>
           <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
             Some other other text
