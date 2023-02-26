@@ -14,14 +14,21 @@ import {
 } from '@mui/material';
 import { PersonAdd, Settings, Logout } from '@mui/icons-material';
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '../contexts/auth';
 
 export default function TopMenuBar() {
+  const { user, logout } = useAuth();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    logout();
     setAnchorEl(null);
   };
 
@@ -33,18 +40,20 @@ export default function TopMenuBar() {
             FARMD
           </Link>
         </Typography>
-        <Tooltip title='Account settings'>
-          <IconButton
-            onClick={handleClick}
-            size='small'
-            sx={{ ml: 2 }}
-            aria-controls={open ? 'account-menu' : undefined}
-            aria-haspopup='true'
-            aria-expanded={open ? 'true' : undefined}
-          >
-            <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
-          </IconButton>
-        </Tooltip>
+        {user !== null && (
+          <Tooltip title='Account settings'>
+            <IconButton
+              onClick={handleClick}
+              size='small'
+              sx={{ ml: 2 }}
+              aria-controls={open ? 'account-menu' : undefined}
+              aria-haspopup='true'
+              aria-expanded={open ? 'true' : undefined}
+            >
+              <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
+            </IconButton>
+          </Tooltip>
+        )}
       </Toolbar>
       <Menu
         anchorEl={anchorEl}
@@ -100,7 +109,7 @@ export default function TopMenuBar() {
           </ListItemIcon>
           Settings
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize='small' />
           </ListItemIcon>

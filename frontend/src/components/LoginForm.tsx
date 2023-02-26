@@ -11,24 +11,20 @@ import {
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import authService from '../services/auth.service';
 import { useSnackBar } from '../contexts/snackbar';
+import { useAuth } from '../contexts/auth';
 
 export default function LoginForm() {
   const navigate = useNavigate();
   const { showSnackBar } = useSnackBar();
+  const { login } = useAuth();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
 
     try {
-      const response = await authService.login(data);
-      console.log(response);
+      await login(data);
       showSnackBar('Login successful.', 'success', 3000);
       navigate('/');
     } catch (error) {

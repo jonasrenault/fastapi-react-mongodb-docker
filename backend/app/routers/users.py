@@ -42,7 +42,9 @@ async def register_user(
 
 
 @router.get("/me", response_model=schemas.User)
-def get_profile(current_user: models.User = Depends(get_current_active_user)) -> Any:
+async def get_profile(
+    current_user: models.User = Depends(get_current_active_user),
+) -> Any:
     """
     Get current user.
     """

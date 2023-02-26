@@ -5,6 +5,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
 import { router } from './router';
+import { SnackBarProvider } from './contexts/snackbar';
+import { AuthProvider } from './contexts/auth';
 import './axios';
 
 import '@fontsource/roboto/300.css';
@@ -16,7 +18,11 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <SnackBarProvider>
+          <RouterProvider router={router} />
+        </SnackBarProvider>
+      </AuthProvider>
     </ThemeProvider>
   </React.StrictMode>,
 );
