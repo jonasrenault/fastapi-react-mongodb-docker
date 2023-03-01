@@ -13,11 +13,12 @@ import {
   Tooltip,
 } from '@mui/material';
 import { PersonAdd, Settings, Logout } from '@mui/icons-material';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/auth';
 
 export default function TopMenuBar() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -30,6 +31,7 @@ export default function TopMenuBar() {
   const handleLogout = () => {
     logout();
     setAnchorEl(null);
+    navigate('/');
   };
 
   return (
