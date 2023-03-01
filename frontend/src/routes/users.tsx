@@ -23,12 +23,17 @@ export async function loader() {
 }
 
 export default function Users() {
-  const { users } = useLoaderData();
+  const { users: initialUsers } = useLoaderData();
+  const [users, setUsers] = useState<Array<User>>(initialUsers);
   const [selectedUser, setSelectedUser] = useState<User>();
   const { user: currentUser } = useAuth();
 
   const handleSelect = (user: User) => () => {
     setSelectedUser(user);
+  };
+
+  const handleUserUpdate = (update: User) => {
+    setUsers(users.map((user) => (user.uuid == update.uuid ? update : user)));
   };
 
   return (
@@ -74,7 +79,10 @@ export default function Users() {
                 flexDirection: 'column',
               }}
             >
-              <UserProfile userProfile={selectedUser}></UserProfile>
+              <UserProfile
+                userProfile={selectedUser}
+                onUserUpdated={handleUserUpdate}
+              ></UserProfile>
             </Paper>
           </Grid>
         )}

@@ -10,7 +10,7 @@ interface UserProfileProps {
 }
 
 export default function UserProfile(props: UserProfileProps) {
-  const { userProfile } = props;
+  const { userProfile, onUserUpdated } = props;
   const {
     register,
     handleSubmit,
@@ -29,14 +29,19 @@ export default function UserProfile(props: UserProfileProps) {
   const onSubmit = async (data) => {
     event.preventDefault();
 
-    // Updating user profile
+    let updatedUser;
     if (currentUser.uuid === userProfile.uuid) {
-      const updatedUser = await userService.updateProfile(data);
+      // Updating user profile.
+      updatedUser = await userService.updateProfile(data);
       setUser(updatedUser);
       showSnackBar('User profile updated successfully.', 'success');
     } else {
-      await userService.updateUser(userProfile.uuid, data);
+      // Updating user different from current user.
+      updatedUser = await userService.updateUser(userProfile.uuid, data);
       showSnackBar('User profile updated successfully.', 'success');
+    }
+    if (onUserUpdated) {
+      onUserUpdated(updatedUser);
     }
   };
 
