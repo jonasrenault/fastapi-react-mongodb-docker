@@ -6,6 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from .routers.api import api_router
 from .config.config import settings
 from .models.users import User
+from .auth.auth import get_hashed_password
 
 app = FastAPI(
     title=settings.PROJECT_NAME, openapi_url=f"{settings.API_V1_STR}/openapi.json"
@@ -34,6 +35,15 @@ async def start_database():
         password=settings.MONGO_PASSWORD,
     )
     await init_beanie(database=client[settings.MONGO_DB], document_models=[User])
+
+    user = await User.find_one({"email": settings.FIRST_SUPERUSER})
+    if not user:
+        user = User(
+            email=settings.FIRST_SUPERUSER,
+            hashed_password=get_hashed_password(settings.FIRST_SUPERUSER_PASSWORD),
+            is_superuser=True,
+        )
+        await user.create()
 
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
