@@ -11,6 +11,7 @@ import {
   Divider,
   ListItemIcon,
   Tooltip,
+  Button,
 } from '@mui/material';
 import { PersonAdd, Settings, Logout } from '@mui/icons-material';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -42,7 +43,14 @@ export default function TopMenuBar() {
             FARMD
           </Link>
         </Typography>
-        {user !== null && (
+
+        {user !== undefined && user.is_superuser && (
+          <Button component={NavLink} to='/users' sx={{ color: '#fff' }}>
+            Users
+          </Button>
+        )}
+
+        {user !== undefined && (
           <Tooltip title='Account settings'>
             <IconButton
               onClick={handleClick}
@@ -52,7 +60,9 @@ export default function TopMenuBar() {
               aria-haspopup='true'
               aria-expanded={open ? 'true' : undefined}
             >
-              <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
+              <Avatar sx={{ width: 32, height: 32 }}>
+                {user && user.first_name ? user.first_name[0] : 'P'}
+              </Avatar>
             </IconButton>
           </Tooltip>
         )}
@@ -99,13 +109,13 @@ export default function TopMenuBar() {
         </Link>
 
         <Divider />
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleClose} disabled={true}>
           <ListItemIcon>
             <PersonAdd fontSize='small' />
           </ListItemIcon>
           Add another account
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleClose} disabled={true}>
           <ListItemIcon>
             <Settings fontSize='small' />
           </ListItemIcon>

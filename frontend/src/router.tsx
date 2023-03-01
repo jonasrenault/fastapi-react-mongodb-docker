@@ -5,6 +5,7 @@ import ErrorPage from './error-page';
 import { Profile } from './routes/profile';
 import Login from './routes/login';
 import Register from './routes/register';
+import Users, { loader as usersLoader } from './routes/users';
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +25,11 @@ export const router = createBrowserRouter([
       {
         path: 'register',
         element: <Register />,
+      },
+      {
+        path: 'users',
+        element: <Users />,
+        loader: usersLoader,
       },
     ],
   },

@@ -35,7 +35,7 @@ const AuthProvider: FC<AuthContextProviderProps> = ({ children }) => {
         const user = await userService.getProfile();
         setUser(user);
       } catch (error) {
-        setUser(null);
+        setUser(undefined);
       }
     }
     fetchUserProfile();
@@ -49,7 +49,7 @@ const AuthProvider: FC<AuthContextProviderProps> = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
-    setUser(null);
+    setUser(undefined);
   };
 
   return (

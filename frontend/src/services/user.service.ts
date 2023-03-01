@@ -18,6 +18,11 @@ class UserService {
     const response = await axios.put(API_URL + `/${userId}`, profile);
     return response.data;
   }
+
+  async getUsers(): Array<User> {
+    const response = await axios.get(API_URL + 'users');
+    return response.data;
+  }
 }
 
 export default new UserService();

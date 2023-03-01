@@ -1,12 +1,6 @@
 import { Container, Grid, Paper } from '@mui/material';
 import UserProfile from '../components/UserProfile';
-import userService from '../services/user.service';
 import { useAuth } from '../contexts/auth';
-
-export async function loader() {
-  const userProfile = await userService.getProfile();
-  return { userProfile };
-}
 
 export function Profile() {
   const { user } = useAuth();
