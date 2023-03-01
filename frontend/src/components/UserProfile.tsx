@@ -1,6 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { Button, TextField, Link, Grid, Box, FormControlLabel, Checkbox } from '@mui/material';
+import { Button, TextField, Grid, Box, FormControlLabel, Checkbox } from '@mui/material';
 import { useSnackBar } from '../contexts/snackbar';
 import { useAuth, User } from '../contexts/auth';
 import userService from '../services/user.service';
@@ -17,38 +16,19 @@ export default function UserProfile(props: UserProfileProps) {
     formState: { errors },
   } = useForm<User>();
   const { user, setUser } = useAuth();
-  const navigate = useNavigate();
   const { showSnackBar } = useSnackBar();
 
   const onSubmit = async (data) => {
     event.preventDefault();
-    // const data = new FormData(event.currentTarget);
-    console.log(data);
 
     // Updating user profile
     if (user.uuid === userProfile.uuid) {
       const updatedUser = await userService.updateProfile(data);
       setUser(updatedUser);
+      showSnackBar('User profile updated successfully.', 'success');
     } else {
       await userService.updateUser(userProfile.uuid, data);
     }
-    // console.log({
-    //   email: data.get('email'),
-    //   password: data.get('password'),
-    //   is_active: data.get('is_active'),
-    // });
-    // const userUpdate = Object.fromEntries(data);
-
-    // console.log(userUpdate);
-    // try {
-    //   const response = await authService.register(userData);
-    //   console.log(response);
-    //   showSnackBar('Registration successful.', 'success', 3000);
-    //   navigate('/login');
-    // } catch (error) {
-    //   console.log(error.message);
-    //   showSnackBar(error.message, 'error', 3000);
-    // }
   };
 
   return (
