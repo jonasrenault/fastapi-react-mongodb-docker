@@ -24,12 +24,12 @@ export async function loader() {
 
 export default function Users() {
   const { users } = useLoaderData();
-  const [user, setUser] = useState<User>();
+  const [selectedUser, setSelectedUser] = useState<User>();
   const { user: currentUser } = useAuth();
 
   const handleSelect = (user: User) => () => {
     console.log(user);
-    setUser(user);
+    setSelectedUser(user);
   };
 
   return (
@@ -74,7 +74,7 @@ export default function Users() {
               flexDirection: 'column',
             }}
           >
-            {user && <UserProfile userProfile={user}></UserProfile>}
+            {selectedUser && <UserProfile userProfile={selectedUser}></UserProfile>}
           </Paper>
         </Grid>
       </Grid>

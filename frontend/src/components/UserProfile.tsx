@@ -15,14 +15,14 @@ export default function UserProfile(props: UserProfileProps) {
     handleSubmit,
     formState: { errors },
   } = useForm<User>();
-  const { user, setUser } = useAuth();
+  const { user: currentUser, setUser } = useAuth();
   const { showSnackBar } = useSnackBar();
 
   const onSubmit = async (data) => {
     event.preventDefault();
 
     // Updating user profile
-    if (user.uuid === userProfile.uuid) {
+    if (currentUser.uuid === userProfile.uuid) {
       const updatedUser = await userService.updateProfile(data);
       setUser(updatedUser);
       showSnackBar('User profile updated successfully.', 'success');
@@ -40,7 +40,12 @@ export default function UserProfile(props: UserProfileProps) {
           alignItems: 'center',
         }}
       >
-        <Box component='form' onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
+        <Box
+          component='form'
+          onSubmit={handleSubmit(onSubmit)}
+          sx={{ mt: 3 }}
+          key={userProfile.uuid}
+        >
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -88,7 +93,7 @@ export default function UserProfile(props: UserProfileProps) {
                 {...register('password')}
               />
             </Grid>
-            {user?.is_superuser && (
+            {currentUser?.is_superuser && (
               <>
                 <Grid item xs={12}>
                   <FormControlLabel
