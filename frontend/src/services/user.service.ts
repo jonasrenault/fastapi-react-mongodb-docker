@@ -15,7 +15,7 @@ class UserService {
   }
 
   async updateUser(userId: string, profile: User): User {
-    const response = await axios.put(API_URL + `/${userId}`, profile);
+    const response = await axios.put(API_URL + `users/${userId}`, profile);
     return response.data;
   }
 

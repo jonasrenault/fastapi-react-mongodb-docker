@@ -28,7 +28,6 @@ export default function Users() {
   const { user: currentUser } = useAuth();
 
   const handleSelect = (user: User) => () => {
-    console.log(user);
     setSelectedUser(user);
   };
 
@@ -66,17 +65,19 @@ export default function Users() {
             </List>
           </Paper>
         </Grid>
-        <Grid item xs={12} md={7} lg={5}>
-          <Paper
-            sx={{
-              p: 2,
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            {selectedUser && <UserProfile userProfile={selectedUser}></UserProfile>}
-          </Paper>
-        </Grid>
+        {selectedUser && (
+          <Grid item xs={12} md={7} lg={5}>
+            <Paper
+              sx={{
+                p: 2,
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <UserProfile userProfile={selectedUser}></UserProfile>
+            </Paper>
+          </Grid>
+        )}
       </Grid>
     </Container>
   );

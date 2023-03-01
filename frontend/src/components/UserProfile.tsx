@@ -3,6 +3,7 @@ import { Button, TextField, Grid, Box, FormControlLabel, Checkbox } from '@mui/m
 import { useSnackBar } from '../contexts/snackbar';
 import { useAuth, User } from '../contexts/auth';
 import userService from '../services/user.service';
+import { useEffect } from 'react';
 
 interface UserProfileProps {
   userProfile: User;
@@ -13,10 +14,17 @@ export default function UserProfile(props: UserProfileProps) {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
-  } = useForm<User>();
+  } = useForm<User>({
+    defaultValues: userProfile,
+  });
   const { user: currentUser, setUser } = useAuth();
   const { showSnackBar } = useSnackBar();
+
+  useEffect(() => {
+    reset(userProfile);
+  }, [userProfile]);
 
   const onSubmit = async (data) => {
     event.preventDefault();
@@ -28,6 +36,7 @@ export default function UserProfile(props: UserProfileProps) {
       showSnackBar('User profile updated successfully.', 'success');
     } else {
       await userService.updateUser(userProfile.uuid, data);
+      showSnackBar('User profile updated successfully.', 'success');
     }
   };
 
@@ -54,7 +63,7 @@ export default function UserProfile(props: UserProfileProps) {
                 fullWidth
                 id='firstName'
                 label='First Name'
-                defaultValue={userProfile.first_name}
+                // defaultValue={userProfile.first_name}
                 {...register('first_name')}
                 autoFocus
               />
@@ -66,21 +75,24 @@ export default function UserProfile(props: UserProfileProps) {
                 label='Last Name'
                 name='lastName'
                 autoComplete='family-name'
-                defaultValue={userProfile.last_name}
+                // defaultValue={userProfile.last_name}
                 {...register('last_name')}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
-                required
+                // required
                 fullWidth
                 id='email'
                 label='Email Address'
                 name='email'
                 autoComplete='email'
-                defaultValue={userProfile.email}
+                error={!!errors.email}
+                helperText={errors?.email?.message}
+                // defaultValue={userProfile.email}
                 {...register('email', { required: true })}
               />
+              {errors.email && <p>{errors.email.message}</p>}
             </Grid>
             <Grid item xs={12}>
               <TextField
