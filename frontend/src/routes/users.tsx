@@ -70,8 +70,8 @@ export default function Users() {
             </List>
           </Paper>
         </Grid>
-        {selectedUser && (
-          <Grid item xs={12} md={7} lg={5}>
+        <Grid item xs={12} md={7} lg={5}>
+          {selectedUser && (
             <Paper
               sx={{
                 p: 2,
@@ -84,8 +84,8 @@ export default function Users() {
                 onUserUpdated={handleUserUpdate}
               ></UserProfile>
             </Paper>
-          </Grid>
-        )}
+          )}
+        </Grid>
       </Grid>
     </Container>
   );
