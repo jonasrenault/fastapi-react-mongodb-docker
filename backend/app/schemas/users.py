@@ -6,7 +6,6 @@ from uuid import UUID
 
 # Shared properties
 class UserBase(BaseModel):
-    uuid: UUID
     email: Optional[EmailStr] = None
     is_active: Optional[bool] = True
     is_superuser: bool = False
@@ -34,7 +33,7 @@ class UserInDBBase(UserBase):
 
 # Additional properties to return via API
 class User(UserInDBBase):
-    pass
+    uuid: UUID
 
 
 # Additional properties stored in DB

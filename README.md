@@ -79,7 +79,7 @@ This will give you access to a bash session in the `backend` container. Change t
 
 ## Deployment
 
-Deployment to a Docker Swarm mode cluster should be possible, but it has not been tested. Refer to Tiangolo's [Full stack FastAPI cookiecutter](https://github.com/tiangolo/full-stack-fastapi-postgresql) project documentation for information on how to manage deployment and how to configure the Traefik proxy with constraints and such. The <a href="https://dockerswarm.rocks" target="_blank">[DockerSwarm.rocks</a> tutorials are also a good place to look for info.
+Deployment to a Docker Swarm mode cluster should be possible, but it has not been tested. Refer to Tiangolo's [Full stack FastAPI cookiecutter](https://github.com/tiangolo/full-stack-fastapi-postgresql) project documentation for information on how to manage deployment and how to configure the Traefik proxy with constraints and such. The <a href="https://dockerswarm.rocks" target="_blank">DockerSwarm.rocks</a> tutorials are also a good place to look for info.
 
 ## Docker Compose files and env vars
 

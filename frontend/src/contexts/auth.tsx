@@ -13,6 +13,7 @@ export interface User {
 
 type AuthContextType = {
   user: User | null;
+  setUser: (user: User) => void;
   login: (data: FormData) => void;
   logout: () => void;
 };
@@ -51,7 +52,9 @@ const AuthProvider: FC<AuthContextProviderProps> = ({ children }) => {
     setUser(null);
   };
 
-  return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, setUser, login, logout }}>{children}</AuthContext.Provider>
+  );
 };
 
 const useAuth = (): AuthContextType => {

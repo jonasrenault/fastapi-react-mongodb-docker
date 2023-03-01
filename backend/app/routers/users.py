@@ -51,6 +51,28 @@ async def get_profile(
     return current_user
 
 
+@router.patch("/me", response_model=schemas.User)
+async def update_profile(
+    update: schemas.UserUpdate,
+    current_user: models.User = Depends(get_current_active_user),
+) -> Any:
+    """
+    Update current user.
+    """
+    update_data = update.dict(exclude_unset=True)
+    try:
+        if update_data["password"]:
+            update_data["hashed_password"] = get_hashed_password(
+                update_data["password"]
+            )
+            del update_data["password"]
+    except KeyError:
+        pass
+    current_user = current_user.copy(update=update_data)
+    await current_user.save()
+    return current_user
+
+
 @router.put("/{userid}", response_model=schemas.User)
 async def update_user(
     userid: UUID,
