@@ -3,32 +3,16 @@ import axios from 'axios';
 const API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
 interface UserRegister {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   password: string;
 }
 
 class AuthService {
   async register(user: UserRegister) {
-    if (!(user.firstName && user.firstName.length > 0)) {
-      throw new Error('First name was not provided');
-    }
-    if (!(user.lastName && user.lastName.length > 0)) {
-      throw new Error('Last name was not provided');
-    }
-    if (!(user.email && user.email.length > 0)) {
-      throw new Error('Email was not provided');
-    }
-    if (!(user.password && user.password.length > 0)) {
-      throw new Error('Password was not provided');
-    }
-    const response = await axios.post(API_URL + 'users', {
-      first_name: user.firstName,
-      last_name: user.lastName,
-      email: user.email,
-      password: user.password,
-    });
+    console.log(user);
+    const response = await axios.post(API_URL + 'users', user);
 
     return response.data;
   }

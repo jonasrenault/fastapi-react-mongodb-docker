@@ -68,7 +68,6 @@ export default function UserProfile(props: UserProfileProps) {
                 fullWidth
                 id='firstName'
                 label='First Name'
-                // defaultValue={userProfile.first_name}
                 {...register('first_name')}
                 autoFocus
               />
@@ -80,7 +79,6 @@ export default function UserProfile(props: UserProfileProps) {
                 label='Last Name'
                 name='lastName'
                 autoComplete='family-name'
-                // defaultValue={userProfile.last_name}
                 {...register('last_name')}
               />
             </Grid>
@@ -93,11 +91,9 @@ export default function UserProfile(props: UserProfileProps) {
                 name='email'
                 autoComplete='email'
                 error={!!errors.email}
-                helperText={errors?.email?.message}
-                // defaultValue={userProfile.email}
+                helperText={errors.email && 'Please provide a valid email.'}
                 {...register('email', { required: true })}
               />
-              {errors.email && <p>{errors.email.message}</p>}
             </Grid>
             <Grid item xs={12}>
               <TextField

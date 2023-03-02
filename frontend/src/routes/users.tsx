@@ -68,7 +68,9 @@ export default function Users() {
       <Grid container spacing={2} justifyContent='center'>
         <Grid item xs={12} md={5}>
           <Paper>
-            <List>
+            <List
+              sx={{ maxHeight: 450, overflow: 'auto', '::-webkit-scrollbar': { display: 'none' } }}
+            >
               {users.map((user) => {
                 return (
                   <ListItem

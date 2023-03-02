@@ -1,25 +1,26 @@
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Avatar, Button, TextField, Link, Grid, Box, Typography } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { useForm } from 'react-hook-form';
 import authService from '../services/auth.service';
 import { useSnackBar } from '../contexts/snackbar';
 
 export default function RegisterForm() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<User>();
   const navigate = useNavigate();
   const { showSnackBar } = useSnackBar();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const userData = Object.fromEntries(data);
+  const onSubmit = async (data) => {
     try {
-      const response = await authService.register(userData);
-      console.log(response);
+      await authService.register(data);
       showSnackBar('Registration successful.', 'success', 3000);
       navigate('/login');
     } catch (error) {
-      console.log(error.message);
-      showSnackBar(error.message, 'error', 3000);
+      showSnackBar(`An error occurred while trying to register: ${error.message}`, 'error', 3000);
     }
   };
 
@@ -39,27 +40,24 @@ export default function RegisterForm() {
         <Typography component='h1' variant='h5'>
           Sign up
         </Typography>
-        <Box component='form' onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Box component='form' onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
                 autoComplete='given-name'
-                name='firstName'
-                required
                 fullWidth
                 id='firstName'
                 label='First Name'
                 autoFocus
+                {...register('first_name')}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                required
                 fullWidth
-                id='lastName'
                 label='Last Name'
-                name='lastName'
                 autoComplete='family-name'
+                {...register('last_name')}
               />
             </Grid>
             <Grid item xs={12}>
@@ -68,8 +66,10 @@ export default function RegisterForm() {
                 fullWidth
                 id='email'
                 label='Email Address'
-                name='email'
                 autoComplete='email'
+                error={!!errors.email}
+                helperText={errors.email && 'Please provide a valid email.'}
+                {...register('email', { required: true })}
               />
             </Grid>
             <Grid item xs={12}>
@@ -81,6 +81,9 @@ export default function RegisterForm() {
                 type='password'
                 id='password'
                 autoComplete='new-password'
+                error={!!errors.password}
+                helperText={errors.password && 'Please provide a password.'}
+                {...register('password')}
               />
             </Grid>
           </Grid>
