@@ -1,11 +1,25 @@
+import asyncio
 from typing import Generator, Dict
 from unittest.mock import patch
 
 import pytest
 from fastapi.testclient import TestClient
+from httpx import AsyncClient
+from ..config.config import settings
+
+# Override config settings before loading the app
+# We set the MONGO_DB to a test database
+
+settings.MONGO_DB = "farmdtest"
 
 from ..main import app
-from ..config.config import settings
+
+
+# @pytest.fixture(scope="session")
+# def event_loop():
+#     """Force the pytest-asyncio loop to be the main one."""
+#     loop = asyncio.get_event_loop()
+#     yield loop
 
 
 @pytest.fixture(scope="module")
@@ -18,6 +32,12 @@ def client() -> Generator:
     with patch("app.config.config.settings.MONGO_DB", "farmdtest"):
         with TestClient(app) as c:
             yield c
+
+
+@pytest.fixture()
+async def async_client():
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        yield client
 
 
 @pytest.fixture(scope="module")
