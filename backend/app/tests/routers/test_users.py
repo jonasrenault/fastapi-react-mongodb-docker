@@ -4,8 +4,6 @@ from typing import Dict
 from httpx import AsyncClient
 
 from app.config.config import settings
-from app.main import app
-from app.models import User
 from ..utils import create_test_user, generate_user_auth_headers
 
 
