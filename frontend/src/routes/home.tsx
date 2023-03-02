@@ -1,5 +1,4 @@
-import { Link as RouterLink } from 'react-router-dom';
-import { Container, Box, Typography, Button, Stack, Link } from '@mui/material';
+import { Container, Box, Typography, Link } from '@mui/material';
 
 export default function Home() {
   return (
@@ -79,14 +78,6 @@ export default function Home() {
         <Typography variant='h3' align='center' color='text.secondary' sx={{ mt: 5 }}>
           = FARMD
         </Typography>
-        <Stack sx={{ pt: 5 }} direction='row' spacing={2} justifyContent='center'>
-          <Button variant='contained' component={RouterLink} to='/login'>
-            Login
-          </Button>
-          <Button variant='outlined' component={RouterLink} to='/register'>
-            Register
-          </Button>
-        </Stack>
       </Container>
     </Box>
   );

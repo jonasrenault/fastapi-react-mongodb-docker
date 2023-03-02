@@ -12,6 +12,7 @@ import {
   ListItemIcon,
   Tooltip,
   Button,
+  Box,
 } from '@mui/material';
 import { PersonAdd, Settings, Logout } from '@mui/icons-material';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -43,6 +44,17 @@ export default function TopMenuBar() {
             FARMD
           </Link>
         </Typography>
+
+        {user === undefined && (
+          <Box aria-label='button group'>
+            <Button component={NavLink} to='/login' sx={{ color: '#fff' }}>
+              Login
+            </Button>
+            <Button component={NavLink} to='/register' sx={{ color: '#fff' }}>
+              Register
+            </Button>
+          </Box>
+        )}
 
         {user !== undefined && user.is_superuser && (
           <Button component={NavLink} to='/users' sx={{ color: '#fff' }}>
