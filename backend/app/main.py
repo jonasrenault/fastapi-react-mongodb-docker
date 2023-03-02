@@ -25,9 +25,6 @@ if settings.BACKEND_CORS_ORIGINS:
 
 @app.on_event("startup")
 async def start_database():
-    print(
-        f"connection with user {settings.MONGO_USER} and pw {settings.MONGO_PASSWORD}"
-    )
     client = AsyncIOMotorClient(
         settings.MONGO_HOST,
         settings.MONGO_PORT,
