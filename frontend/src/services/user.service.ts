@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { User } from '../contexts/auth';
 
-const API_URL = 'http://localhost:8000/api/v1/';
+const API_URL = import.meta.env.VITE_BACKEND_API_URL;
 
 class UserService {
   async getProfile(): User {

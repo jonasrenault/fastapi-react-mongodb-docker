@@ -91,7 +91,10 @@ export default function Users() {
                       </ListItemAvatar>
                       <ListItemText
                         primary={user.email}
-                        secondary={user.first_name + ' ' + user.last_name}
+                        secondary={
+                          (user.first_name || user.last_name) &&
+                          user.first_name + ' ' + user.last_name
+                        }
                       />
                     </ListItemButton>
                   </ListItem>
