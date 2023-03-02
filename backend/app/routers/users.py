@@ -73,7 +73,7 @@ async def update_profile(
     return current_user
 
 
-@router.put("/{userid}", response_model=schemas.User)
+@router.patch("/{userid}", response_model=schemas.User)
 async def update_user(
     userid: UUID,
     update: schemas.UserUpdate,

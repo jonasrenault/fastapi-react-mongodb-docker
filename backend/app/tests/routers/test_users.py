@@ -3,8 +3,14 @@ from typing import Dict
 
 from httpx import AsyncClient
 
-from app.config.config import settings
-from ..utils import create_test_user, generate_user_auth_headers
+from ...config.config import settings
+from ...models import User
+from ..utils import (
+    create_test_user,
+    generate_user_auth_headers,
+    random_email,
+    random_lower_string,
+)
 
 
 @pytest.mark.anyio
@@ -34,3 +40,43 @@ async def test_get_profile_normal_user(client: AsyncClient) -> None:
     assert profile["is_active"] is True
     assert profile["is_superuser"] is False
     assert profile["email"] == user.email
+
+
+@pytest.mark.anyio
+async def test_create_user(client: AsyncClient) -> None:
+    username = random_email()
+    password = random_lower_string()
+    data = {"email": username, "password": password}
+    r = await client.post(
+        f"{settings.API_V1_STR}/users",
+        json=data,
+    )
+    assert r.status_code == 200
+    created_user = r.json()
+    user = await User.find_one({"email": username})
+    assert user
+    assert user.email == created_user["email"]
+
+
+@pytest.mark.anyio
+async def test_create_user_existing_username(client: AsyncClient) -> None:
+    user = await create_test_user()
+    data = {"email": user.email, "password": "password"}
+    r = await client.post(f"{settings.API_V1_STR}/users", json=data)
+    response = r.json()
+    assert r.status_code == 400
+    assert response["detail"] == "User with that email already exists."
+
+
+@pytest.mark.anyio
+async def test_get_existing_user(
+    client: AsyncClient, superuser_token_headers: dict
+) -> None:
+    user = await create_test_user()
+    r = await client.get(
+        f"{settings.API_V1_STR}/users/{user.uuid}",
+        headers=superuser_token_headers,
+    )
+    assert r.status_code == 200
+    api_user = r.json()
+    assert user.email == api_user["email"]
