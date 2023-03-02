@@ -23,6 +23,11 @@ class UserService {
     const response = await axios.get(API_URL + 'users');
     return response.data;
   }
+
+  async deleteUser(userId: string) {
+    const response = await axios.delete(API_URL + `users/${userId}`);
+    return response.data;
+  }
 }
 
 export default new UserService();

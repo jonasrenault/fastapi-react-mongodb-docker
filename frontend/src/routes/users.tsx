@@ -11,8 +11,14 @@ import {
   ListItemText,
   IconButton,
   Avatar,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useSnackBar } from '../contexts/snackbar';
 import UserProfile from '../components/UserProfile';
 import userService from '../services/user.service';
 import { useAuth } from '../contexts/auth';
@@ -24,9 +30,12 @@ export async function loader() {
 
 export default function Users() {
   const { users: initialUsers } = useLoaderData();
+  const { user: currentUser } = useAuth();
+  const { showSnackBar } = useSnackBar();
   const [users, setUsers] = useState<Array<User>>(initialUsers);
   const [selectedUser, setSelectedUser] = useState<User>();
-  const { user: currentUser } = useAuth();
+  const [toDeleteUser, setToDeleteUser] = useState<User>();
+  const [open, setOpen] = useState(false);
 
   const handleSelect = (user: User) => () => {
     setSelectedUser(user);
@@ -34,6 +43,24 @@ export default function Users() {
 
   const handleUserUpdate = (update: User) => {
     setUsers(users.map((user) => (user.uuid == update.uuid ? update : user)));
+  };
+
+  const handleUserDelete = (user: User) => () => {
+    setToDeleteUser(user);
+    setOpen(true);
+  };
+
+  const handleCancel = () => setOpen(false);
+
+  const handleConfirm = async () => {
+    setOpen(false);
+    await userService.deleteUser(toDeleteUser.uuid);
+    showSnackBar('User deleted successfully.', 'success');
+    setUsers(users.filter((user) => user.uuid !== toDeleteUser.uuid));
+    if (selectedUser && selectedUser.uuid === toDeleteUser.uuid) {
+      setSelectedUser(undefined);
+    }
+    setToDeleteUser(undefined);
   };
 
   return (
@@ -48,14 +75,17 @@ export default function Users() {
                     key={user.uuid}
                     secondaryAction={
                       currentUser?.uuid !== user.uuid && (
-                        <IconButton edge='end' aria-label='delete'>
+                        <IconButton edge='end' aria-label='delete' onClick={handleUserDelete(user)}>
                           <DeleteIcon />
                         </IconButton>
                       )
                     }
                     disablePadding
                   >
-                    <ListItemButton onClick={handleSelect(user)}>
+                    <ListItemButton
+                      onClick={handleSelect(user)}
+                      selected={selectedUser?.uuid == user.uuid}
+                    >
                       <ListItemAvatar>
                         <Avatar />
                       </ListItemAvatar>
@@ -87,6 +117,26 @@ export default function Users() {
           )}
         </Grid>
       </Grid>
+      <Dialog
+        open={open}
+        onClose={handleCancel}
+        aria-labelledby='alert-dialog-title'
+        aria-describedby='alert-dialog-description'
+      >
+        <DialogContent>
+          <DialogContentText id='alert-dialog-description'>
+            Are you sure you want to delete this user ?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancel} autoFocus>
+            Cancel
+          </Button>
+          <Button onClick={handleConfirm} variant='contained' color='primary'>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }

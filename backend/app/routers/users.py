@@ -77,7 +77,7 @@ async def update_profile(
 async def update_user(
     userid: UUID,
     update: schemas.UserUpdate,
-    current_user: models.User = Depends(get_current_active_superuser),
+    admin_user: models.User = Depends(get_current_active_superuser),
 ) -> Any:
     """
     Update a user.
@@ -102,7 +102,24 @@ async def update_user(
 
 
 @router.get("/{userid}", response_model=schemas.User)
-async def get_user(userid: UUID):
+async def get_user(
+    userid: UUID, admin_user: models.User = Depends(get_current_active_superuser)
+):
+    """
+    Get User Info
+
+    ** Restricted to superuser **
+
+    Parameters
+    ----------
+    userid : UUID
+        the user's UUID
+
+    Returns
+    -------
+    schemas.User
+        User info
+    """
     user = await models.User.find_one({"uuid": userid})
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -116,7 +133,9 @@ async def get_users(limit: Optional[int] = 10, offset: Optional[int] = 0):
 
 
 @router.delete("/{userid}", response_model=schemas.User)
-async def delete_user(userid: UUID):
+async def delete_user(
+    userid: UUID, admin_user: models.User = Depends(get_current_active_superuser)
+):
     user = await models.User.find_one({"uuid": userid})
     await user.delete()
     return user
