@@ -1,53 +1,43 @@
-import asyncio
-from typing import Generator, Dict
+from typing import Iterator, Dict
 from unittest.mock import patch
 
 import pytest
-from fastapi.testclient import TestClient
+from asgi_lifespan import LifespanManager
+from fastapi import FastAPI
 from httpx import AsyncClient
-from ..config.config import settings
-
-# Override config settings before loading the app
-# We set the MONGO_DB to a test database
-
-settings.MONGO_DB = "farmdtest"
 
 from ..main import app
+from ..config.config import settings
+from .utils import get_user_auth_headers
+
+MONGO_TEST_DB = "farmdtest"
 
 
-# @pytest.fixture(scope="session")
-# def event_loop():
-#     """Force the pytest-asyncio loop to be the main one."""
-#     loop = asyncio.get_event_loop()
-#     yield loop
+@pytest.fixture
+def anyio_backend():
+    return "asyncio"
 
 
-@pytest.fixture(scope="module")
-def client() -> Generator:
-    """
-    Fixture to generate the test client. Note that we patch the
-    MONGO_DB setting to work with a test database and avoid
-    poluting the real database.
-    """
-    with patch("app.config.config.settings.MONGO_DB", "farmdtest"):
-        with TestClient(app) as c:
-            yield c
+async def clear_database(server: FastAPI) -> None:
+    test_db = server.client[MONGO_TEST_DB]
+    for collection in await test_db.list_collections():
+        await test_db[collection["name"]].delete_many({})
 
 
 @pytest.fixture()
-async def async_client():
-    async with AsyncClient(app=app, base_url="http://test") as client:
-        yield client
+async def client() -> Iterator[AsyncClient]:
+    """Async server client that handles lifespan and teardown"""
+    with patch("app.config.config.settings.MONGO_DB", MONGO_TEST_DB):
+        async with LifespanManager(app):
+            async with AsyncClient(app=app, base_url="http://test") as client:
+                try:
+                    yield client
+                finally:
+                    await clear_database(app)
 
 
-@pytest.fixture(scope="module")
-def superuser_token_headers(client: TestClient) -> Dict[str, str]:
-    login_data = {
-        "username": settings.FIRST_SUPERUSER,
-        "password": settings.FIRST_SUPERUSER_PASSWORD,
-    }
-    r = client.post(f"{settings.API_V1_STR}/login/access-token", data=login_data)
-    tokens = r.json()
-    a_token = tokens["access_token"]
-    headers = {"Authorization": f"Bearer {a_token}"}
-    return headers
+@pytest.fixture()
+async def superuser_token_headers(client: AsyncClient) -> Dict[str, str]:
+    return await get_user_auth_headers(
+        client, settings.FIRST_SUPERUSER, settings.FIRST_SUPERUSER_PASSWORD
+    )
