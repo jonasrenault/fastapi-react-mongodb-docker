@@ -80,3 +80,36 @@ async def test_get_existing_user(
     assert r.status_code == 200
     api_user = r.json()
     assert user.email == api_user["email"]
+
+
+@pytest.mark.anyio
+async def test_update_profile(client: AsyncClient) -> None:
+    # create user
+    user = await create_test_user()
+    token_headers = await generate_user_auth_headers(client, user)
+
+    # update user email and pw
+    data = {"email": random_email(), "password": random_lower_string()}
+    r = await client.patch(
+        f"{settings.API_V1_STR}/users/me", json=data, headers=token_headers
+    )
+    assert r.status_code == 200
+
+    updated_user = await User.get(user.id)
+    assert updated_user.email == data["email"]
+
+
+@pytest.mark.anyio
+async def test_update_profile_existing_email(client: AsyncClient) -> None:
+    # create user
+    user = await create_test_user()
+    token_headers = await generate_user_auth_headers(client, user)
+
+    # update user email to already existing email
+    data = {"email": settings.FIRST_SUPERUSER}
+    r = await client.patch(
+        f"{settings.API_V1_STR}/users/me", json=data, headers=token_headers
+    )
+    response = r.json()
+    assert r.status_code == 400
+    assert response["detail"] == "User with that email already exists."
