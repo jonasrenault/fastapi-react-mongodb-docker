@@ -6,8 +6,8 @@ from asgi_lifespan import LifespanManager
 from fastapi import FastAPI
 from httpx import AsyncClient
 
-from ..main import app
-from ..config.config import settings
+from app.main import app
+from app.config.config import settings
 from .utils import get_user_auth_headers
 
 MONGO_TEST_DB = "farmdtest"

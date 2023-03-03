@@ -23,7 +23,6 @@ passlib = "^1.7.4"
 bcrypt = "^4.0.1"
 beanie = "^1.17.0"
 python-dotenv = "^0.21.1"
-asgi-lifespan = "^2.0.0"
 
 [tool.poetry.group.dev]
 optional = true
@@ -32,7 +31,9 @@ optional = true
 black = "^23.1.0"
 pre-commit = "^3.0.4"
 httpx = "^0.23.3"
+asgi-lifespan = "^2.0.0"
 pytest = "^7.2.1"
+pytest-cov = "^4.0.0"
 
 [build-system]
 requires = ["poetry-core"]

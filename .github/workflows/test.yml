@@ -60,4 +60,10 @@ jobs:
       if: steps.cache-deps.outputs.cache-hit != 'true'
 
     - name: Test with pytest
-      run: poetry run pytest
+      run: poetry run pytest --cov=app tests --cov-report html
+
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v3
+      with:
+        name: code-coverage-report
+        path: htmlcov

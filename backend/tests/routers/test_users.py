@@ -3,8 +3,8 @@ from typing import Dict
 
 from httpx import AsyncClient
 
-from ...config.config import settings
-from ...models import User
+from app.config.config import settings
+from app.models import User
 from ..utils import (
     create_test_user,
     generate_user_auth_headers,
