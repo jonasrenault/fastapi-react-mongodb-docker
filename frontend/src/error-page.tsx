@@ -1,17 +1,17 @@
-import { Typography, Grid, Button, Card, CardContent, CardActions } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
-import { useRouteError, isRouteErrorResponse } from 'react-router-dom';
+import { Typography, Grid, Button, Card, CardContent, CardActions } from '@mui/material'
+import { Link as RouterLink } from 'react-router-dom'
+import { useRouteError, isRouteErrorResponse } from 'react-router-dom'
 
 interface Error {
-  status: number;
-  statusText: string;
-  data: string;
-  message: string;
+  status: number
+  statusText: string
+  data: string
+  message: string
 }
 
 export default function ErrorPage() {
-  const error = useRouteError() as Error;
-  console.error(error);
+  const error = useRouteError() as Error
+  console.error(error)
   if (isRouteErrorResponse(error)) {
     return (
       <Grid
@@ -45,8 +45,8 @@ export default function ErrorPage() {
           </Card>
         </Grid>
       </Grid>
-    );
+    )
   } else {
-    return <div>Oops</div>;
+    return <div>Oops</div>
   }
 }

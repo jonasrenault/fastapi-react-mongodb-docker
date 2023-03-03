@@ -1,27 +1,27 @@
-import { Box, Avatar, Typography, Button, TextField, Link, Grid } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useSnackBar } from '../contexts/snackbar';
-import { useAuth } from '../contexts/auth';
+import { Box, Avatar, Typography, Button, TextField, Link, Grid } from '@mui/material'
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { useSnackBar } from '../contexts/snackbar'
+import { useAuth } from '../contexts/auth'
 
 export default function LoginForm() {
-  const navigate = useNavigate();
-  const { showSnackBar } = useSnackBar();
-  const { login } = useAuth();
+  const navigate = useNavigate()
+  const { showSnackBar } = useSnackBar()
+  const { login } = useAuth()
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    event.preventDefault()
+    const data = new FormData(event.currentTarget)
 
     try {
-      await login(data);
-      showSnackBar('Login successful.', 'success', 3000);
-      navigate('/');
+      await login(data)
+      showSnackBar('Login successful.', 'success', 3000)
+      navigate('/')
     } catch (error) {
-      console.log(error.message);
-      showSnackBar(error.message, 'error', 3000);
+      console.log(error.message)
+      showSnackBar(error.message, 'error', 3000)
     }
-  };
+  }
 
   return (
     <Box
@@ -71,5 +71,5 @@ export default function LoginForm() {
         </Grid>
       </Box>
     </Box>
-  );
+  )
 }

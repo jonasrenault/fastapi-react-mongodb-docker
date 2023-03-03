@@ -1,28 +1,28 @@
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { Avatar, Button, TextField, Link, Grid, Box, Typography } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { useForm } from 'react-hook-form';
-import authService from '../services/auth.service';
-import { useSnackBar } from '../contexts/snackbar';
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { Avatar, Button, TextField, Link, Grid, Box, Typography } from '@mui/material'
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import { useForm } from 'react-hook-form'
+import authService from '../services/auth.service'
+import { useSnackBar } from '../contexts/snackbar'
 
 export default function RegisterForm() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<User>();
-  const navigate = useNavigate();
-  const { showSnackBar } = useSnackBar();
+  } = useForm<User>()
+  const navigate = useNavigate()
+  const { showSnackBar } = useSnackBar()
 
   const onSubmit = async (data) => {
     try {
-      await authService.register(data);
-      showSnackBar('Registration successful.', 'success', 3000);
-      navigate('/login');
+      await authService.register(data)
+      showSnackBar('Registration successful.', 'success', 3000)
+      navigate('/login')
     } catch (error) {
-      showSnackBar(`An error occurred while trying to register: ${error.message}`, 'error', 3000);
+      showSnackBar(`An error occurred while trying to register: ${error.message}`, 'error', 3000)
     }
-  };
+  }
 
   return (
     <div>
@@ -100,5 +100,5 @@ export default function RegisterForm() {
         </Box>
       </Box>
     </div>
-  );
+  )
 }

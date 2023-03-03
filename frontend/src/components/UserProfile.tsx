@@ -1,16 +1,16 @@
-import { useForm } from 'react-hook-form';
-import { Button, TextField, Grid, Box, FormControlLabel, Checkbox } from '@mui/material';
-import { useSnackBar } from '../contexts/snackbar';
-import { useAuth, User } from '../contexts/auth';
-import userService from '../services/user.service';
-import { useEffect } from 'react';
+import { useForm } from 'react-hook-form'
+import { Button, TextField, Grid, Box, FormControlLabel, Checkbox } from '@mui/material'
+import { useSnackBar } from '../contexts/snackbar'
+import { useAuth, User } from '../contexts/auth'
+import userService from '../services/user.service'
+import { useEffect } from 'react'
 
 interface UserProfileProps {
-  userProfile: User;
+  userProfile: User
 }
 
 export default function UserProfile(props: UserProfileProps) {
-  const { userProfile, onUserUpdated } = props;
+  const { userProfile, onUserUpdated } = props
   const {
     register,
     handleSubmit,
@@ -18,32 +18,32 @@ export default function UserProfile(props: UserProfileProps) {
     formState: { errors },
   } = useForm<User>({
     defaultValues: userProfile,
-  });
-  const { user: currentUser, setUser } = useAuth();
-  const { showSnackBar } = useSnackBar();
+  })
+  const { user: currentUser, setUser } = useAuth()
+  const { showSnackBar } = useSnackBar()
 
   useEffect(() => {
-    reset(userProfile);
-  }, [userProfile]);
+    reset(userProfile)
+  }, [userProfile])
 
   const onSubmit = async (data) => {
-    event.preventDefault();
+    event.preventDefault()
 
-    let updatedUser;
+    let updatedUser
     if (currentUser.uuid === userProfile.uuid) {
       // Updating user profile.
-      updatedUser = await userService.updateProfile(data);
-      setUser(updatedUser);
-      showSnackBar('User profile updated successfully.', 'success');
+      updatedUser = await userService.updateProfile(data)
+      setUser(updatedUser)
+      showSnackBar('User profile updated successfully.', 'success')
     } else {
       // Updating user different from current user.
-      updatedUser = await userService.updateUser(userProfile.uuid, data);
-      showSnackBar('User profile updated successfully.', 'success');
+      updatedUser = await userService.updateUser(userProfile.uuid, data)
+      showSnackBar('User profile updated successfully.', 'success')
     }
     if (onUserUpdated) {
-      onUserUpdated(updatedUser);
+      onUserUpdated(updatedUser)
     }
-  };
+  }
 
   return (
     <div>
@@ -143,5 +143,5 @@ export default function UserProfile(props: UserProfileProps) {
         </Box>
       </Box>
     </div>
-  );
+  )
 }

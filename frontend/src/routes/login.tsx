@@ -1,5 +1,5 @@
-import { Grid, Container, Paper } from '@mui/material';
-import LoginForm from '../components/LoginForm';
+import { Grid, Container, Paper } from '@mui/material'
+import LoginForm from '../components/LoginForm'
 
 export default function Login() {
   return (
@@ -18,5 +18,5 @@ export default function Login() {
         </Grid>
       </Grid>
     </Container>
-  );
+  )
 }

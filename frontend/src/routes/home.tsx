@@ -1,4 +1,4 @@
-import { Container, Box, Typography, Link } from '@mui/material';
+import { Container, Box, Typography, Link } from '@mui/material'
 
 export default function Home() {
   return (
@@ -80,5 +80,5 @@ export default function Home() {
         </Typography>
       </Container>
     </Box>
-  );
+  )
 }
