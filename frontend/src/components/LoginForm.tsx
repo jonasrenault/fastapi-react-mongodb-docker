@@ -21,14 +21,14 @@ export default function LoginForm() {
       formData.append('username', data.email)
       formData.append('password', data.password)
       await login(formData)
-      showSnackBar('Login successful.', 'success', 3000)
+      showSnackBar('Login successful.', 'success')
       navigate('/')
     } catch (error) {
       const msg =
         error.response && typeof error.response.data.detail == 'string'
           ? error.response.data.detail
           : error.message
-      showSnackBar(msg, 'error', 3000)
+      showSnackBar(msg, 'error')
     }
   }
 

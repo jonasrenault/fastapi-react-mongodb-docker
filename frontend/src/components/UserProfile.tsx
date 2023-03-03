@@ -27,19 +27,26 @@ export default function UserProfile(props: UserProfileProps) {
   }, [userProfile])
 
   const onSubmit = async (data) => {
-    event.preventDefault()
-
     let updatedUser
-    if (currentUser.uuid === userProfile.uuid) {
-      // Updating user profile.
-      updatedUser = await userService.updateProfile(data)
-      setUser(updatedUser)
-      showSnackBar('User profile updated successfully.', 'success')
-    } else {
-      // Updating user different from current user.
-      updatedUser = await userService.updateUser(userProfile.uuid, data)
-      showSnackBar('User profile updated successfully.', 'success')
+    try {
+      if (currentUser.uuid === userProfile.uuid) {
+        // Updating user profile.
+        updatedUser = await userService.updateProfile(data)
+        setUser(updatedUser)
+        showSnackBar('User profile updated successfully.', 'success')
+      } else {
+        // Updating user different from current user.
+        updatedUser = await userService.updateUser(userProfile.uuid, data)
+        showSnackBar('User profile updated successfully.', 'success')
+      }
+    } catch (error) {
+      const msg =
+        error.response && typeof error.response.data.detail == 'string'
+          ? error.response.data.detail
+          : error.message
+      showSnackBar(msg, 'error')
     }
+
     if (onUserUpdated) {
       onUserUpdated(updatedUser)
     }
@@ -59,6 +66,7 @@ export default function UserProfile(props: UserProfileProps) {
           onSubmit={handleSubmit(onSubmit)}
           sx={{ mt: 3 }}
           key={userProfile.uuid}
+          noValidate
         >
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
@@ -90,8 +98,9 @@ export default function UserProfile(props: UserProfileProps) {
                 label='Email Address'
                 name='email'
                 autoComplete='email'
+                required
                 error={!!errors.email}
-                helperText={errors.email && 'Please provide a valid email.'}
+                helperText={errors.email && 'Please provide an email.'}
                 {...register('email', { required: true })}
               />
             </Grid>
