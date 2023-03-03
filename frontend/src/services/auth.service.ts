@@ -11,9 +11,7 @@ interface UserRegister {
 
 class AuthService {
   async register(user: UserRegister) {
-    console.log(user)
     const response = await axios.post(API_URL + 'users', user)
-
     return response.data
   }
 

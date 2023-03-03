@@ -17,10 +17,14 @@ export default function RegisterForm() {
   const onSubmit = async (data) => {
     try {
       await authService.register(data)
-      showSnackBar('Registration successful.', 'success', 3000)
+      showSnackBar('Registration successful.', 'success')
       navigate('/login')
     } catch (error) {
-      showSnackBar(`An error occurred while trying to register: ${error.message}`, 'error', 3000)
+      const msg =
+        error.response && typeof error.response.data.detail == 'string'
+          ? error.response.data.detail
+          : error.message
+      showSnackBar(msg, 'error')
     }
   }
 
@@ -68,7 +72,7 @@ export default function RegisterForm() {
                 label='Email Address'
                 autoComplete='email'
                 error={!!errors.email}
-                helperText={errors.email && 'Please provide a valid email.'}
+                helperText={errors.email && 'Please provide an email.'}
                 {...register('email', { required: true })}
               />
             </Grid>
