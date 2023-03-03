@@ -40,7 +40,7 @@ export default function RegisterForm() {
         <Typography component='h1' variant='h5'>
           Sign up
         </Typography>
-        <Box component='form' onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
+        <Box component='form' onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }} noValidate>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -83,7 +83,7 @@ export default function RegisterForm() {
                 autoComplete='new-password'
                 error={!!errors.password}
                 helperText={errors.password && 'Please provide a password.'}
-                {...register('password')}
+                {...register('password', { required: true })}
               />
             </Grid>
           </Grid>

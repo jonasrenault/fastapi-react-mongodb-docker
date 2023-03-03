@@ -59,6 +59,16 @@ it('should render a sign in button', () => {
   expect(getByRole('button')).toHaveTextContent(/Sign In/i)
 })
 
+it('should display required helper text', async () => {
+  const { getByRole, getByText, user } = setup()
+  const loginBtn = getByRole('button')
+
+  await user.click(loginBtn)
+
+  expect(getByText(/Please provide an email./i)).toBeVisible()
+  expect(getByText(/Please provide a password./i)).toBeVisible()
+})
+
 it('should login user', async () => {
   const { getByRole, user, setEmailInput, setPasswordInput } = setup()
   await setEmailInput('john@example.com')
