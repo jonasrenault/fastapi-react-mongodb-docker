@@ -62,8 +62,10 @@ jobs:
     - name: Test with pytest
       run: poetry run pytest --cov=app tests --cov-report html
 
+    # upload-artifact action does not take into account working-directory default
+    # see https://github.com/actions/upload-artifact/issues/232
     - name: Archive code coverage results
       uses: actions/upload-artifact@v3
       with:
         name: code-coverage-report
-        path: htmlcov
+        path: backend/htmlcov
