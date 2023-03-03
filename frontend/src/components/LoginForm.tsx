@@ -18,8 +18,10 @@ export default function LoginForm() {
       showSnackBar('Login successful.', 'success', 3000)
       navigate('/')
     } catch (error) {
-      console.log(error.message)
-      showSnackBar(error.message, 'error', 3000)
+      // console.log(error)
+      const msg =
+        error.response && error.response.data.detail ? error.response.data.detail : error.message
+      showSnackBar(msg, 'error', 3000)
     }
   }
 
