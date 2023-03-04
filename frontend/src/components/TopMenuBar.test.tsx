@@ -1,9 +1,11 @@
+// @vitest-environment happy-dom
+
 import { expect, it } from 'vitest'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import { waitFor, render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router-dom'
+import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { AuthProvider } from '../contexts/auth'
 import { SnackBarProvider } from '../contexts/snackbar'
 import TopMenuBar from './TopMenuBar'
@@ -28,13 +30,34 @@ afterAll(() => server.close())
 
 function setup() {
   const user = userEvent.setup()
-  const route = '/some-route'
+  const router = createMemoryRouter(
+    [
+      {
+        path: '/',
+        element: <>Nagivated to Home</>,
+      },
+      {
+        path: '/some-route',
+        element: <TopMenuBar />,
+      },
+      {
+        path: '/login',
+        element: <>Navigated to login</>,
+      },
+      {
+        path: '/register',
+        element: <>Navigated to r</>,
+      },
+    ],
+    {
+      initialEntries: ['/some-route'],
+    },
+  )
+
   const utils = render(
     <AuthProvider>
       <SnackBarProvider>
-        <MemoryRouter initialEntries={[route]}>
-          <TopMenuBar />
-        </MemoryRouter>
+        <RouterProvider router={router} />,
       </SnackBarProvider>
     </AuthProvider>,
   )
@@ -42,6 +65,7 @@ function setup() {
   return {
     ...utils,
     user,
+    router,
   }
 }
 
@@ -102,8 +126,22 @@ it('should show users menu for admins', async () => {
   })
 })
 
+it('should navigate to login', async () => {
+  const { getByText, user, router } = setup()
+  const loginBtn = getByText(/Login/i)
+  await user.click(loginBtn)
+  expect(router.state.location.pathname).toEqual('/login')
+})
+
+it('should navigate to register', async () => {
+  const { getByText, user, router } = setup()
+  const registerBtn = getByText(/Register/i)
+  await user.click(registerBtn)
+  expect(router.state.location.pathname).toEqual('/register')
+})
+
 it('should logout', async () => {
-  const { getByText, getByLabelText, queryByLabelText, user } = setupLogged()
+  const { getByText, getByLabelText, queryByLabelText, user, router } = setupLogged()
   await waitFor(() => {
     expect(getByLabelText(/Account settings/i)).toBeInTheDocument()
   })
@@ -116,4 +154,5 @@ it('should logout', async () => {
 
   expect(localStorage.getItem('token')).toBeNull()
   expect(queryByLabelText(/Account settings/i)).not.toBeInTheDocument()
+  expect(router.state.location.pathname).toEqual('/')
 })
