@@ -67,6 +67,7 @@ export default function UserProfile(props: UserProfileProps) {
           sx={{ mt: 3 }}
           key={userProfile.uuid}
           noValidate
+          data-testid='user-profile-form'
         >
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>

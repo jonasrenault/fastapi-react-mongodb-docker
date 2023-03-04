@@ -3,7 +3,7 @@
 import { expect, it } from 'vitest'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { waitFor, render, within } from '@testing-library/react'
+import { waitFor, render, within, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { RouterProvider, createMemoryRouter } from 'react-router-dom'
 import { AuthProvider } from '../contexts/auth'
@@ -193,24 +193,36 @@ it('should display profile info when user selected', async () => {
 })
 
 it('should update user info in the user list', async () => {
-  const { getByRole, getByTestId, getByLabelText, user } = setup()
+  const { getByRole, getByTestId, getByLabelText, queryByRole, user } = setup()
   await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
 
+  server.use(
+    rest.patch(API_URL + `users/${users[2].uuid}`, (req, res, ctx) => {
+      return res(
+        ctx.json({
+          email: 'ericsmith@gmail.com',
+          is_active: true,
+          is_superuser: false,
+          first_name: 'Brad',
+          last_name: 'Pitt',
+          uuid: 'd1ba04b9-cd9f-40fe-8956-8a0198f47884',
+        }),
+      )
+    }),
+  )
+
+  // select user 2
   await user.click(getByTestId(users[2].uuid))
   await waitFor(() => expect(getByLabelText(/First Name/i)).toHaveValue(users[2].first_name))
 
-  await user.type(getByLabelText(/Email Address/i), 'hello@gmail.com')
+  // update its first and last name
   await user.type(getByLabelText(/First Name/i), 'Brad')
   await user.type(getByLabelText(/Last Name/i), 'Pitt')
-  const updateBtn = getByRole('button', { name: 'Update' })
-  await user.click(updateBtn)
+  const profileform = getByTestId('user-profile-form')
+  fireEvent.submit(profileform)
 
-  // await waitFor(() => {
-  //   // expect(queryByRole('alert')).toHaveTextContent('User profile updated successfully.')
-  //   expect(queryByTestId(users[2].uuid)).toHaveTextContent('hello@mgail.com')
-  // })
-  // // screen.debug()
-
-  // const listitems = await findAllByRole('listitem')
-  // expect(listitems[2]).toHaveTextContent('Brad Pitt')
+  await waitFor(() => {
+    expect(queryByRole('alert')).toHaveTextContent('User profile updated successfully.')
+    expect(getByTestId(users[2].uuid)).toHaveTextContent('Brad Pitt')
+  })
 })
