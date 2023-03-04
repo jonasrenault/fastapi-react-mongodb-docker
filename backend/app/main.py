@@ -25,16 +25,13 @@ if settings.BACKEND_CORS_ORIGINS:
 
 @app.on_event("startup")
 async def start_database():
-    print(
-        f"connection with user {settings.MONGO_USER} and pw {settings.MONGO_PASSWORD}"
-    )
-    client = AsyncIOMotorClient(
+    app.client = AsyncIOMotorClient(
         settings.MONGO_HOST,
         settings.MONGO_PORT,
         username=settings.MONGO_USER,
         password=settings.MONGO_PASSWORD,
     )
-    await init_beanie(database=client[settings.MONGO_DB], document_models=[User])
+    await init_beanie(database=app.client[settings.MONGO_DB], document_models=[User])
 
     user = await User.find_one({"email": settings.FIRST_SUPERUSER})
     if not user:

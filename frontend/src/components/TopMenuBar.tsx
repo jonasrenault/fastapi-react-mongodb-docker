@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from 'react'
 import {
   Avatar,
   Menu,
@@ -13,28 +13,28 @@ import {
   Tooltip,
   Button,
   Box,
-} from '@mui/material';
-import { PersonAdd, Settings, Logout } from '@mui/icons-material';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/auth';
+} from '@mui/material'
+import { PersonAdd, Settings, Logout } from '@mui/icons-material'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/auth'
 
 export default function TopMenuBar() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
   const handleClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   const handleLogout = () => {
-    logout();
-    setAnchorEl(null);
-    navigate('/');
-  };
+    logout()
+    setAnchorEl(null)
+    navigate('/')
+  }
 
   return (
     <AppBar position='absolute'>
@@ -141,5 +141,5 @@ export default function TopMenuBar() {
         </MenuItem>
       </Menu>
     </AppBar>
-  );
+  )
 }

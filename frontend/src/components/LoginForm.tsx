@@ -1,27 +1,36 @@
-import { Box, Avatar, Typography, Button, TextField, Link, Grid } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useSnackBar } from '../contexts/snackbar';
-import { useAuth } from '../contexts/auth';
+import { Box, Avatar, Typography, Button, TextField, Link, Grid } from '@mui/material'
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { useSnackBar } from '../contexts/snackbar'
+import { useAuth } from '../contexts/auth'
 
 export default function LoginForm() {
-  const navigate = useNavigate();
-  const { showSnackBar } = useSnackBar();
-  const { login } = useAuth();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<User>()
+  const navigate = useNavigate()
+  const { showSnackBar } = useSnackBar()
+  const { login } = useAuth()
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-
+  const onSubmit = async (data) => {
     try {
-      await login(data);
-      showSnackBar('Login successful.', 'success', 3000);
-      navigate('/');
+      const formData = new FormData()
+      formData.append('username', data.email)
+      formData.append('password', data.password)
+      await login(formData)
+      showSnackBar('Login successful.', 'success')
+      navigate('/')
     } catch (error) {
-      console.log(error.message);
-      showSnackBar(error.message, 'error', 3000);
+      const msg =
+        error.response && typeof error.response.data.detail == 'string'
+          ? error.response.data.detail
+          : error.message
+      showSnackBar(msg, 'error')
     }
-  };
+  }
 
   return (
     <Box
@@ -38,16 +47,19 @@ export default function LoginForm() {
       <Typography component='h1' variant='h5'>
         Sign in
       </Typography>
-      <Box component='form' onSubmit={handleSubmit} sx={{ mt: 1 }}>
+      <Box component='form' onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }} noValidate>
         <TextField
           margin='normal'
           required
           fullWidth
           id='email'
           label='Email Address'
-          name='username'
+          name='email'
           autoComplete='email'
           autoFocus
+          error={!!errors.email}
+          helperText={errors.email && 'Please provide an email.'}
+          {...register('email', { required: true })}
         />
         <TextField
           margin='normal'
@@ -58,6 +70,9 @@ export default function LoginForm() {
           type='password'
           id='password'
           autoComplete='current-password'
+          error={!!errors.password}
+          helperText={errors.password && 'Please provide a password.'}
+          {...register('password', { required: true })}
         />
         <Button type='submit' fullWidth variant='contained' sx={{ mt: 3, mb: 2 }}>
           Sign In
@@ -71,5 +86,5 @@ export default function LoginForm() {
         </Grid>
       </Box>
     </Box>
-  );
+  )
 }

@@ -5,6 +5,12 @@ from pydantic import BaseSettings, AnyHttpUrl, EmailStr
 
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
+
+    # SECRET_KEY for JWT token generation
+    # Calling secrets.token_urlsafe will generate a new secret everytime
+    # the server restarts, which can be quite annoying when developing, where
+    # a stable SECRET_KEY is prefered.
+
     # SECRET_KEY: str = secrets.token_urlsafe(32)
     SECRET_KEY: str = "temporarysecretkey"
 

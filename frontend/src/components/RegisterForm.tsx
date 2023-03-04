@@ -1,28 +1,32 @@
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { Avatar, Button, TextField, Link, Grid, Box, Typography } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { useForm } from 'react-hook-form';
-import authService from '../services/auth.service';
-import { useSnackBar } from '../contexts/snackbar';
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { Avatar, Button, TextField, Link, Grid, Box, Typography } from '@mui/material'
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import { useForm } from 'react-hook-form'
+import authService from '../services/auth.service'
+import { useSnackBar } from '../contexts/snackbar'
 
 export default function RegisterForm() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<User>();
-  const navigate = useNavigate();
-  const { showSnackBar } = useSnackBar();
+  } = useForm<User>()
+  const navigate = useNavigate()
+  const { showSnackBar } = useSnackBar()
 
   const onSubmit = async (data) => {
     try {
-      await authService.register(data);
-      showSnackBar('Registration successful.', 'success', 3000);
-      navigate('/login');
+      await authService.register(data)
+      showSnackBar('Registration successful.', 'success')
+      navigate('/login')
     } catch (error) {
-      showSnackBar(`An error occurred while trying to register: ${error.message}`, 'error', 3000);
+      const msg =
+        error.response && typeof error.response.data.detail == 'string'
+          ? error.response.data.detail
+          : error.message
+      showSnackBar(msg, 'error')
     }
-  };
+  }
 
   return (
     <div>
@@ -40,7 +44,7 @@ export default function RegisterForm() {
         <Typography component='h1' variant='h5'>
           Sign up
         </Typography>
-        <Box component='form' onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
+        <Box component='form' onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }} noValidate>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -68,7 +72,7 @@ export default function RegisterForm() {
                 label='Email Address'
                 autoComplete='email'
                 error={!!errors.email}
-                helperText={errors.email && 'Please provide a valid email.'}
+                helperText={errors.email && 'Please provide an email.'}
                 {...register('email', { required: true })}
               />
             </Grid>
@@ -83,7 +87,7 @@ export default function RegisterForm() {
                 autoComplete='new-password'
                 error={!!errors.password}
                 helperText={errors.password && 'Please provide a password.'}
-                {...register('password')}
+                {...register('password', { required: true })}
               />
             </Grid>
           </Grid>
@@ -100,5 +104,5 @@ export default function RegisterForm() {
         </Box>
       </Box>
     </div>
-  );
+  )
 }

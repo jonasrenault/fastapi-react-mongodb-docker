@@ -1,5 +1,5 @@
-import { Grid, Container, Paper } from '@mui/material';
-import RegisterForm from '../components/RegisterForm';
+import { Grid, Container, Paper } from '@mui/material'
+import RegisterForm from '../components/RegisterForm'
 
 export default function Register() {
   return (
@@ -18,5 +18,5 @@ export default function Register() {
         </Grid>
       </Grid>
     </Container>
-  );
+  )
 }

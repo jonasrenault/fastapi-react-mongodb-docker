@@ -28,7 +28,7 @@ async def login_access_token(form_data: OAuth2PasswordRequestForm = Depends()) -
     }
 
 
-@router.post("/test-token", response_model=schemas.User)
+@router.get("/test-token", response_model=schemas.User)
 async def test_token(current_user: models.User = Depends(get_current_user)) -> Any:
     """
     Test access token

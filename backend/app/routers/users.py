@@ -69,11 +69,16 @@ async def update_profile(
     except KeyError:
         pass
     current_user = current_user.copy(update=update_data)
-    await current_user.save()
-    return current_user
+    try:
+        await current_user.save()
+        return current_user
+    except errors.DuplicateKeyError:
+        raise HTTPException(
+            status_code=400, detail="User with that email already exists."
+        )
 
 
-@router.put("/{userid}", response_model=schemas.User)
+@router.patch("/{userid}", response_model=schemas.User)
 async def update_user(
     userid: UUID,
     update: schemas.UserUpdate,
@@ -97,8 +102,13 @@ async def update_user(
     if update.password is not None:
         update.password = get_hashed_password(update.password)
     user = user.copy(update=update.dict(exclude_unset=True))
-    await user.save()
-    return user
+    try:
+        await user.save()
+        return user
+    except errors.DuplicateKeyError:
+        raise HTTPException(
+            status_code=400, detail="User with that email already exists."
+        )
 
 
 @router.get("/{userid}", response_model=schemas.User)
@@ -127,7 +137,11 @@ async def get_user(
 
 
 @router.get("", response_model=List[schemas.User])
-async def get_users(limit: Optional[int] = 10, offset: Optional[int] = 0):
+async def get_users(
+    limit: Optional[int] = 10,
+    offset: Optional[int] = 0,
+    admin_user: models.User = Depends(get_current_active_superuser),
+):
     users = await models.User.find_all().skip(offset).limit(limit).to_list()
     return users
 

@@ -1,9 +1,9 @@
-import { Container, Grid, Paper } from '@mui/material';
-import UserProfile from '../components/UserProfile';
-import { useAuth } from '../contexts/auth';
+import { Container, Grid, Paper } from '@mui/material'
+import UserProfile from '../components/UserProfile'
+import { useAuth } from '../contexts/auth'
 
 export function Profile() {
-  const { user } = useAuth();
+  const { user } = useAuth()
   return (
     <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>
       <Grid container spacing={2} justifyContent='center'>
@@ -20,5 +20,5 @@ export function Profile() {
         </Grid>
       </Grid>
     </Container>
-  );
+  )
 }

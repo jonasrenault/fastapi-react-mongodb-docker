@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useLoaderData } from 'react-router-dom';
+import { useState } from 'react'
+import { useLoaderData, redirect } from 'react-router-dom'
 import {
   Grid,
   Container,
@@ -16,52 +16,56 @@ import {
   DialogContentText,
   DialogActions,
   Button,
-} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { useSnackBar } from '../contexts/snackbar';
-import UserProfile from '../components/UserProfile';
-import userService from '../services/user.service';
-import { useAuth } from '../contexts/auth';
+} from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete'
+import { useSnackBar } from '../contexts/snackbar'
+import UserProfile from '../components/UserProfile'
+import userService from '../services/user.service'
+import { useAuth } from '../contexts/auth'
 
 export async function loader() {
-  const users = await userService.getUsers();
-  return { users };
+  try {
+    const users = await userService.getUsers()
+    return { users }
+  } catch {
+    return redirect('/')
+  }
 }
 
 export default function Users() {
-  const { users: initialUsers } = useLoaderData();
-  const { user: currentUser } = useAuth();
-  const { showSnackBar } = useSnackBar();
-  const [users, setUsers] = useState<Array<User>>(initialUsers);
-  const [selectedUser, setSelectedUser] = useState<User>();
-  const [toDeleteUser, setToDeleteUser] = useState<User>();
-  const [open, setOpen] = useState(false);
+  const { users: initialUsers } = useLoaderData()
+  const { user: currentUser } = useAuth()
+  const { showSnackBar } = useSnackBar()
+  const [users, setUsers] = useState<Array<User>>(initialUsers)
+  const [selectedUser, setSelectedUser] = useState<User>()
+  const [toDeleteUser, setToDeleteUser] = useState<User>()
+  const [open, setOpen] = useState(false)
 
   const handleSelect = (user: User) => () => {
-    setSelectedUser(user);
-  };
+    setSelectedUser(user)
+  }
 
   const handleUserUpdate = (update: User) => {
-    setUsers(users.map((user) => (user.uuid == update.uuid ? update : user)));
-  };
+    setUsers(users.map((user) => (user.uuid == update.uuid ? update : user)))
+  }
 
   const handleUserDelete = (user: User) => () => {
-    setToDeleteUser(user);
-    setOpen(true);
-  };
+    setToDeleteUser(user)
+    setOpen(true)
+  }
 
-  const handleCancel = () => setOpen(false);
+  const handleCancel = () => setOpen(false)
 
   const handleConfirm = async () => {
-    setOpen(false);
-    await userService.deleteUser(toDeleteUser.uuid);
-    showSnackBar('User deleted successfully.', 'success');
-    setUsers(users.filter((user) => user.uuid !== toDeleteUser.uuid));
+    setOpen(false)
+    await userService.deleteUser(toDeleteUser.uuid)
+    showSnackBar('User deleted successfully.', 'success')
+    setUsers(users.filter((user) => user.uuid !== toDeleteUser.uuid))
     if (selectedUser && selectedUser.uuid === toDeleteUser.uuid) {
-      setSelectedUser(undefined);
+      setSelectedUser(undefined)
     }
-    setToDeleteUser(undefined);
-  };
+    setToDeleteUser(undefined)
+  }
 
   return (
     <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>
@@ -87,6 +91,7 @@ export default function Users() {
                     <ListItemButton
                       onClick={handleSelect(user)}
                       selected={selectedUser?.uuid == user.uuid}
+                      data-testid={user.uuid}
                     >
                       <ListItemAvatar>
                         <Avatar />
@@ -100,7 +105,7 @@ export default function Users() {
                       />
                     </ListItemButton>
                   </ListItem>
-                );
+                )
               })}
             </List>
           </Paper>
@@ -143,5 +148,5 @@ export default function Users() {
         </DialogActions>
       </Dialog>
     </Container>
-  );
+  )
 }
