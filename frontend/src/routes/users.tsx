@@ -91,6 +91,7 @@ export default function Users() {
                     <ListItemButton
                       onClick={handleSelect(user)}
                       selected={selectedUser?.uuid == user.uuid}
+                      data-testid={user.uuid}
                     >
                       <ListItemAvatar>
                         <Avatar />

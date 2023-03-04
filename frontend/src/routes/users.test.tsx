@@ -128,3 +128,40 @@ it('should not display delete button for profile', async () => {
   const userItems = getAllByRole('listitem')
   expect(within(userItems[1]).queryByRole('button', { name: 'delete' })).not.toBeInTheDocument()
 })
+
+it('should display profile info when user selected', async () => {
+  const { getByRole, getByTestId, getByLabelText, user } = setup()
+  await waitFor(() => {
+    expect(getByRole('list')).toBeInTheDocument()
+  })
+
+  for (let idx = 0; idx < users.length; idx++) {
+    await user.click(getByTestId(users[idx].uuid))
+    await waitFor(() => {
+      expect(getByLabelText(/Email Address/i)).toHaveValue(users[idx].email)
+    })
+  }
+})
+
+it('should update user info in the user list', async () => {
+  const { getByRole, getByTestId, getByLabelText, user } = setup()
+  await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
+
+  await user.click(getByTestId(users[2].uuid))
+  await waitFor(() => expect(getByLabelText(/First Name/i)).toHaveValue(users[2].first_name))
+
+  await user.type(getByLabelText(/Email Address/i), 'hello@gmail.com')
+  await user.type(getByLabelText(/First Name/i), 'Brad')
+  await user.type(getByLabelText(/Last Name/i), 'Pitt')
+  const updateBtn = getByRole('button', { name: 'Update' })
+  await user.click(updateBtn)
+
+  // await waitFor(() => {
+  //   // expect(queryByRole('alert')).toHaveTextContent('User profile updated successfully.')
+  //   expect(queryByTestId(users[2].uuid)).toHaveTextContent('hello@mgail.com')
+  // })
+  // // screen.debug()
+
+  // const listitems = await findAllByRole('listitem')
+  // expect(listitems[2]).toHaveTextContent('Brad Pitt')
+})
