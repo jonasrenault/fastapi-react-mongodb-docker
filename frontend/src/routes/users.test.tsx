@@ -8,7 +8,7 @@ import userEvent from '@testing-library/user-event'
 import { RouterProvider, createMemoryRouter } from 'react-router-dom'
 import { AuthProvider } from '../contexts/auth'
 import { SnackBarProvider } from '../contexts/snackbar'
-import Users from './users'
+import Users, { loader as usersLoader } from './users'
 
 const API_URL = import.meta.env.VITE_BACKEND_API_URL
 const profile: User = {
@@ -45,6 +45,9 @@ const server = setupServer(
   rest.get(API_URL + 'users/me', (req, res, ctx) => {
     return res(ctx.json(profile))
   }),
+  rest.get(API_URL + 'users', (req, res, ctx) => {
+    return res(ctx.json(users))
+  }),
 )
 
 beforeAll(() => server.listen())
@@ -55,9 +58,13 @@ function setup() {
   const user = userEvent.setup()
   const routes = [
     {
+      path: '/',
+      element: <>Navigated to Home</>,
+    },
+    {
       path: '/users',
       element: <Users />,
-      loader: () => ({ users }),
+      loader: usersLoader,
     },
   ]
 
@@ -74,6 +81,7 @@ function setup() {
   return {
     ...utils,
     user,
+    router,
   }
 }
 
@@ -89,4 +97,34 @@ it('should render user list', async () => {
   userItems.forEach((item, idx) => {
     expect(item).toHaveTextContent(users[idx].email)
   })
+})
+
+it('should redirect if loader throws error', async () => {
+  server.use(
+    rest.get(API_URL + 'users', (req, res, ctx) => {
+      return res(ctx.status(401), ctx.json('Invalid credentials.'))
+    }),
+  )
+  const { router } = setup()
+  await waitFor(() => expect(router.state.location.pathname).toEqual('/'))
+})
+
+it('should display delete buttons for other users', async () => {
+  const { getAllByRole, getByRole } = setup()
+  await waitFor(() => {
+    expect(getByRole('list')).toBeInTheDocument()
+  })
+
+  const userItems = getAllByRole('listitem')
+  expect(within(userItems[0]).getByRole('button', { name: 'delete' })).toBeInTheDocument()
+})
+
+it('should not display delete button for profile', async () => {
+  const { getAllByRole, getByRole } = setup()
+  await waitFor(() => {
+    expect(getByRole('list')).toBeInTheDocument()
+  })
+
+  const userItems = getAllByRole('listitem')
+  expect(within(userItems[1]).queryByRole('button', { name: 'delete' })).not.toBeInTheDocument()
 })

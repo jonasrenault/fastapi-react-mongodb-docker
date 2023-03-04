@@ -137,7 +137,11 @@ async def get_user(
 
 
 @router.get("", response_model=List[schemas.User])
-async def get_users(limit: Optional[int] = 10, offset: Optional[int] = 0):
+async def get_users(
+    limit: Optional[int] = 10,
+    offset: Optional[int] = 0,
+    admin_user: models.User = Depends(get_current_active_superuser),
+):
     users = await models.User.find_all().skip(offset).limit(limit).to_list()
     return users
 

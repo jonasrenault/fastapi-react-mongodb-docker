@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useLoaderData } from 'react-router-dom'
+import { useLoaderData, redirect } from 'react-router-dom'
 import {
   Grid,
   Container,
@@ -24,8 +24,12 @@ import userService from '../services/user.service'
 import { useAuth } from '../contexts/auth'
 
 export async function loader() {
-  const users = await userService.getUsers()
-  return { users }
+  try {
+    const users = await userService.getUsers()
+    return { users }
+  } catch {
+    return redirect('/')
+  }
 }
 
 export default function Users() {
