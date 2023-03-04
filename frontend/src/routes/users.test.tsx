@@ -129,6 +129,55 @@ it('should not display delete button for profile', async () => {
   expect(within(userItems[1]).queryByRole('button', { name: 'delete' })).not.toBeInTheDocument()
 })
 
+it('should delete user from the list', async () => {
+  const {
+    getAllByRole,
+    getByRole,
+    queryByRole,
+    getByTestId,
+    queryByTestId,
+    getByLabelText,
+    queryByLabelText,
+    user,
+  } = setup()
+  await waitFor(() => {
+    expect(getByRole('list')).toBeInTheDocument()
+  })
+
+  server.use(
+    rest.delete(API_URL + `users/${users[2].uuid}`, (req, res, ctx) => {
+      return res(ctx.status(200))
+    }),
+  )
+
+  const userItems = getAllByRole('listitem')
+  const userBtn = getByTestId(users[2].uuid)
+
+  // select user 2. Expect his profile to be displayed
+  await user.click(userBtn)
+  await waitFor(() => {
+    expect(getByLabelText(/Email Address/i)).toHaveValue(users[2].email)
+  })
+
+  // click on delete button. Expect confirmation modal to be shown
+  const deleteBtn = within(userItems[2]).getByRole('button', { name: 'delete' })
+  await user.click(deleteBtn)
+  const confirmBtn = queryByRole('button', { name: 'Confirm' })
+  await waitFor(() => {
+    expect(confirmBtn).toBeVisible()
+  })
+
+  // click confirm. Expect profile view to be hidden, and user to be deleted
+  // from the list
+  await user.click(confirmBtn)
+  await waitFor(() => {
+    expect(getByRole('alert')).toHaveTextContent('User deleted successfully.')
+  })
+  expect(getAllByRole('listitem')).toHaveLength(2)
+  expect(queryByTestId(users[2].uuid)).not.toBeInTheDocument()
+  expect(queryByLabelText(/Email Address/i)).not.toBeInTheDocument()
+})
+
 it('should display profile info when user selected', async () => {
   const { getByRole, getByTestId, getByLabelText, user } = setup()
   await waitFor(() => {
