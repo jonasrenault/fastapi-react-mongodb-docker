@@ -1,3 +1,4 @@
+import './axios'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
@@ -7,7 +8,6 @@ import theme from './theme'
 import { router } from './router'
 import { SnackBarProvider } from './contexts/snackbar'
 import { AuthProvider } from './contexts/auth'
-import './axios'
 
 import '@fontsource/roboto/300.css'
 import '@fontsource/roboto/400.css'
