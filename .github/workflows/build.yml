@@ -1,0 +1,47 @@
+name: Build and deploy
+
+on:
+  # Trigger the workflow on push to main branch
+  push:
+    branches:
+      - main
+
+  workflow_run:
+    workflows: ["Run tests"]
+    branches: [main]
+    types:
+      - completed
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  # Build docker images with docker compose and push to github registry
+  build-push-to-registry:
+    name: Docker compose build and push to ghcr
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    environment:
+      name: prod
+
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create env file
+        run: |
+          touch .env
+          echo "${{ secrets.SERVER_ENV_PROD }}" > .env
+
+      - name: Build images
+        run: docker compose -f docker-compose.prod.yml build
+
+      - name: Push image to container registry
+        run: docker compose -f docker-compose.prod.yml push
