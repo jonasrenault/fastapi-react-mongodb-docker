@@ -4,6 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, Body, Depends
 from pymongo import errors
 from pydantic.networks import EmailStr
+from beanie.exceptions import RevisionIdWasChanged
 
 from ..auth.auth import (
     get_hashed_password,
@@ -82,7 +83,7 @@ async def update_profile(
     try:
         await current_user.save()
         return current_user
-    except errors.DuplicateKeyError:
+    except (errors.DuplicateKeyError, RevisionIdWasChanged):
         raise HTTPException(
             status_code=400, detail="User with that email already exists."
         )
