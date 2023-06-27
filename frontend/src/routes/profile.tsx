@@ -15,7 +15,7 @@ export function Profile() {
               flexDirection: 'column',
             }}
           >
-            {user && <UserProfile userProfile={user}></UserProfile>}
+            {user && <UserProfile userProfile={user} allowDelete={true}></UserProfile>}
           </Paper>
         </Grid>
       </Grid>

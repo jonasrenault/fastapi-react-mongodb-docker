@@ -6,8 +6,8 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { AuthProvider } from '../contexts/auth'
 import { SnackBarProvider } from '../contexts/snackbar'
-import { User } from '../contexts/auth'
 import UserProfile from './UserProfile'
+import { User } from '../models/user'
 
 const API_URL = import.meta.env.VITE_BACKEND_API_URL
 
@@ -43,13 +43,13 @@ function setup() {
     <AuthProvider>
       <SnackBarProvider>
         <MemoryRouter initialEntries={[route]}>
-          <UserProfile userProfile={profile} onUserUpdated={handleUpdate} />
+          <UserProfile userProfile={profile} onUserUpdated={handleUpdate} allowDelete={false} />
         </MemoryRouter>
       </SnackBarProvider>
     </AuthProvider>,
   )
-  const setEmailInput = (value) => user.type(utils.getByLabelText(/Email Address/i), value)
-  const setPasswordInput = (value) => user.type(utils.getByLabelText(/Password/i), value)
+  const setEmailInput = (value: string) => user.type(utils.getByLabelText(/Email Address/i), value)
+  const setPasswordInput = (value: string) => user.type(utils.getByLabelText(/Password/i), value)
   return {
     ...utils,
     user,
@@ -96,7 +96,7 @@ function setupForUser() {
 
 it('should render an update button', () => {
   const { getByRole } = setupForUser()
-  expect(getByRole('button')).toHaveTextContent(/Update/i)
+  expect(getByRole('button', { name: 'Update' })).toHaveTextContent(/Update/i)
 })
 
 it('should render default values of profile', () => {
@@ -108,10 +108,10 @@ it('should display required helper text', async () => {
   const { getByRole, getByText, user, getByLabelText } = setupForUser()
   await user.clear(getByLabelText(/Email Address/i))
 
-  const updateBtn = getByRole('button')
+  const updateBtn = getByRole('button', { name: 'Update' })
   await user.click(updateBtn)
 
-  expect(getByText(/Please provide an email./i)).toBeVisible()
+  expect(getByText(/Please provide an email address./i)).toBeVisible()
 })
 
 it('should display is_active and is_superuser if admin', async () => {
@@ -125,7 +125,7 @@ it('should display is_active and is_superuser if admin', async () => {
 it('should update user profile', async () => {
   const { getByRole, user } = setupForUser()
 
-  const updateBtn = getByRole('button')
+  const updateBtn = getByRole('button', { name: 'Update' })
   await user.click(updateBtn)
 
   expect(getByRole('alert')).toHaveTextContent('User profile updated successfully.')
@@ -140,7 +140,7 @@ it('should update other user profile', async () => {
     }),
   )
 
-  const updateBtn = getByRole('button')
+  const updateBtn = getByRole('button', { name: 'Update' })
   await user.click(updateBtn)
 
   expect(getByRole('alert')).toHaveTextContent('User profile updated successfully.')
@@ -158,7 +158,7 @@ it('should call onUpdate', async () => {
     }),
   )
 
-  const updateBtn = getByRole('button')
+  const updateBtn = getByRole('button', { name: 'Update' })
   await user.click(updateBtn)
 
   expect(handleUpdate).toHaveBeenCalledWith(updatedProfile)
@@ -174,7 +174,7 @@ it('should handle server errors', async () => {
     }),
   )
 
-  const updateBtn = getByRole('button')
+  const updateBtn = getByRole('button', { name: 'Update' })
   await user.click(updateBtn)
 
   expect(getByRole('alert')).toHaveTextContent(error)

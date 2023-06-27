@@ -1,19 +1,11 @@
 import { createContext, FC, useState, ReactNode, useContext, useEffect } from 'react'
 import userService from '../services/user.service'
 import authService from '../services/auth.service'
-
-export interface User {
-  uuid: string
-  email: string
-  first_name?: string
-  last_name?: string
-  is_active: boolean
-  is_superuser: boolean
-}
+import { User } from '../models/user'
 
 type AuthContextType = {
-  user: User | null
-  setUser: (user: User) => void
+  user: User | undefined
+  setUser: (user: User | undefined) => void
   login: (data: FormData) => void
   logout: () => void
 }

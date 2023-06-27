@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta
+from typing import Any, Dict, Optional, Union
 from uuid import UUID
-from typing import Union, Any
 
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, HTTPException, Request, status
+from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
+from fastapi.security import OAuth2, OAuth2PasswordBearer
+from fastapi.security.utils import get_authorization_scheme_param
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
@@ -13,7 +15,50 @@ from ..config.config import settings
 ACCESS_TOKEN_EXPIRE_MINUTES = 30  # 30 minutes
 ALGORITHM = "HS256"
 
+
+class OAuth2PasswordBearerWithCookie(OAuth2):
+    """
+    Class used to get Authorization token from request HttpOnly cookie instead of
+    header. Used to refresh token during SSO login process.
+    """
+
+    def __init__(
+        self,
+        tokenUrl: str,
+        scheme_name: Optional[str] = None,
+        scopes: Optional[Dict[str, str]] = None,
+        description: Optional[str] = None,
+        auto_error: bool = True,
+    ):
+        if not scopes:
+            scopes = {}
+        flows = OAuthFlowsModel(password={"tokenUrl": tokenUrl, "scopes": scopes})
+        super().__init__(
+            flows=flows,
+            scheme_name=scheme_name,
+            description=description,
+            auto_error=auto_error,
+        )
+
+    async def __call__(self, request: Request) -> Optional[str]:
+        authorization = request.cookies.get("Authorization")
+        scheme, param = get_authorization_scheme_param(authorization)
+        if not authorization or scheme.lower() != "bearer":
+            if self.auto_error:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Not authenticated",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+            else:
+                return None
+        return param
+
+
 oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl=f"{settings.API_V1_STR}/login/access-token"
+)
+oauth2_scheme_with_cookies = OAuth2PasswordBearerWithCookie(
     tokenUrl=f"{settings.API_V1_STR}/login/access-token"
 )
 
@@ -50,6 +95,16 @@ def create_access_token(
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
+    return await _get_current_user(token)
+
+
+async def get_current_user_from_cookie(
+    token: str = Depends(oauth2_scheme_with_cookies),
+):
+    return await _get_current_user(token)
+
+
+async def _get_current_user(token):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

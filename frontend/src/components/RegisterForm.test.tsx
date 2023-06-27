@@ -45,8 +45,8 @@ function setup() {
       </SnackBarProvider>
     </AuthProvider>,
   )
-  const setEmailInput = (value) => user.type(utils.getByLabelText(/Email Address/i), value)
-  const setPasswordInput = (value) => user.type(utils.getByLabelText(/Password/i), value)
+  const setEmailInput = (value: string) => user.type(utils.getByLabelText(/Email Address/i), value)
+  const setPasswordInput = (value: string) => user.type(utils.getByLabelText(/Password/i), value)
   return {
     ...utils,
     user,
@@ -55,27 +55,35 @@ function setup() {
   }
 }
 
-it('should render a sign up button', () => {
-  const { getByRole } = setup()
-  expect(getByRole('button')).toHaveTextContent(/Sign Up/i)
+it('should render a sign up button', async () => {
+  const { getByRole, user } = setup()
+
+  const registerByMailBtn = getByRole('button', { name: 'Sign up with your email address' })
+  await user.click(registerByMailBtn)
+
+  expect(getByRole('button', { name: 'Sign Up' })).toHaveTextContent(/Sign Up/i)
 })
 
 it('should display required helper text', async () => {
   const { getByRole, getByText, user } = setup()
-  const registerBtn = getByRole('button')
+  const registerByMailBtn = getByRole('button', { name: 'Sign up with your email address' })
+  await user.click(registerByMailBtn)
 
+  const registerBtn = getByRole('button', { name: 'Sign Up' })
   await user.click(registerBtn)
 
-  expect(getByText(/Please provide an email./i)).toBeVisible()
+  expect(getByText(/Please provide an email address./i)).toBeVisible()
   expect(getByText(/Please provide a password./i)).toBeVisible()
 })
 
 it('should register user', async () => {
   const { getByRole, user, setEmailInput, setPasswordInput } = setup()
+  const registerByMailBtn = getByRole('button', { name: 'Sign up with your email address' })
+  await user.click(registerByMailBtn)
+
   await setEmailInput('john@example.com')
   await setPasswordInput('johnjohn')
-  const registerBtn = getByRole('button')
-
+  const registerBtn = getByRole('button', { name: 'Sign Up' })
   await user.click(registerBtn)
 
   expect(getByRole('alert')).toHaveTextContent('Registration successful.')
@@ -83,9 +91,12 @@ it('should register user', async () => {
 
 it('should handle server errors', async () => {
   const { getByRole, user, setEmailInput, setPasswordInput } = setup()
+  const registerByMailBtn = getByRole('button', { name: 'Sign up with your email address' })
+  await user.click(registerByMailBtn)
+
   await setEmailInput('john@example.com')
   await setPasswordInput('johnjohn')
-  const registerBtn = getByRole('button')
+  const registerBtn = getByRole('button', { name: 'Sign Up' })
 
   const error = 'User with that email already exists'
   server.use(

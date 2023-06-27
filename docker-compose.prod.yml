@@ -1,0 +1,126 @@
+version: '3.8'
+
+services:
+  proxy:
+    image: traefik:v2.9
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - default
+    ports:
+      - 443:443
+      - 80:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt:/letsencrypt
+    command:
+      - --log.level=INFO
+      # Enable Docker in Traefik, so that it reads labels from Docker services
+      - --providers.docker
+      # Do not expose all Docker services, only the ones explicitly exposed
+      - --providers.docker.exposedbydefault=false
+      # Enable the access log, with HTTP requests
+      - --accesslog
+      # Enable the Traefik log, for configurations and errors
+      - --log
+      # Enable the Dashboard and API
+      - --api
+      # Configure web and websecure entrypoints
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      # Setup Let's Encrypt Acme challenge to generate certificates
+      - --certificatesresolvers.le.acme.tlschallenge=true
+      - --certificatesresolvers.le.acme.email=${TRAEFIK_TLS_EMAIL?Variable not set}
+      - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
+    labels:
+      # Enable Traefik for this service, to make it available in the public network
+      traefik.enable: true
+      # Use the traefik-public network (declared below)
+      traefik.docker.network: ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      # Global redirection: http to https
+      traefik.http.routers.http-catchall.rule: HostRegexp(`{host:(www\.)?${DOMAIN?Variable not set}}`)
+      traefik.http.routers.http-catchall.entrypoints: web
+      traefik.http.routers.http-catchall.middlewares: wwwtohttps
+
+      # Global redirection: https (www.) to https
+      traefik.http.routers.wwwsecure-catchall.rule: HostRegexp(`{host:(www\.)${DOMAIN?Variable not set}}`)
+      traefik.http.routers.wwwsecure-catchall.entrypoints: websecure
+      traefik.http.routers.wwwsecure-catchall.tls: true
+      traefik.http.routers.wwwsecure-catchall.middlewares: wwwtohttps
+
+      # middleware: http(s)://(www.) to  https://
+      traefik.http.middlewares.wwwtohttps.redirectregex.regex: ^https?://(?:www\.)?(.+)
+      traefik.http.middlewares.wwwtohttps.redirectregex.replacement: https://$${1}
+      traefik.http.middlewares.wwwtohttps.redirectregex.permanent: true
+
+      # Traefik dashboard
+      # Uncomment to enable access to dashboard, but it will conflict with /api bath for backend.
+      # traefik.http.routers.dashboard.rule: Host(`${DOMAIN?Variable not set}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+      # traefik.http.routers.dashboard.entrypoints: websecure
+      # traefik.http.routers.dashboard.tls: true
+      # traefik.http.routers.dashboard.tls.certresolver: le
+      # traefik.http.routers.dashboard.service: api@internal
+      # traefik.http.routers.dashboard.middlewares: auth
+      # traefik.http.middlewares.auth.basicauth.users: admin:$$apr1$$8EVjn/nj$$GiLUZqcbueTFeD23SuB6x0 # username: admin, password: admin
+
+  backend:
+    image: '${DOCKER_PACKAGE_REPOSITORY?Variable not set}/${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      - SERVER_NAME=${DOMAIN?Variable not set}
+      - SERVER_HOST=https://${DOMAIN?Variable not set}
+    volumes:
+      - app-static-data:/app/static
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-false}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.tls=true
+      - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.tls.certresolver=le
+      # - traefik.http.services.${STACK_NAME?Variable not set}-backend.loadbalancer.server.port=80
+
+  db:
+    image: mongo:latest
+    volumes:
+      - app-db-data:/data/db
+    env_file:
+      - .env
+    ports:
+      - "${MONGO_PORT}:${MONGO_PORT}"
+    environment:
+      - "MONGO_INITDB_DATABASE=${MONGO_DB}"
+      - "MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}"
+      - "MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}"
+
+  frontend:
+    image: '${DOCKER_PACKAGE_REPOSITORY?Variable not set}/${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}'
+    build:
+      context: ./frontend
+      args:
+        - FRONTEND_ENV=${FRONTEND_ENV-production}
+        - VITE_BACKEND_API_URL
+        - VITE_GA_TRACKING_ID
+        - VITE_PWD_SIGNUP_ENABLED
+    env_file:
+      - .env
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.rule=PathPrefix(`/`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.tls=true
+      - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.tls.certresolver=le
+      # - traefik.http.services.${STACK_NAME?Variable not set}-frontend.loadbalancer.server.port=80
+
+volumes:
+  app-db-data:
+  app-static-data:
+
+networks:
+  traefik-public:
+    # Allow setting it to false for testing
+    external: ${TRAEFIK_PUBLIC_NETWORK_IS_EXTERNAL-true}

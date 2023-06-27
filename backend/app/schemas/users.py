@@ -1,41 +1,48 @@
 from typing import Optional
 from beanie import PydanticObjectId
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from uuid import UUID
 
 
-# Shared properties
 class UserBase(BaseModel):
+    """
+    Shared User properties. Visible by anyone.
+    """
+
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    picture: Optional[str] = None
+
+
+class PrivateUserBase(UserBase):
+    """
+    Shared User properties. Visible only by admins and self.
+    """
+
     email: Optional[EmailStr] = None
     is_active: Optional[bool] = True
     is_superuser: bool = False
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
+    provider: Optional[str] = None
 
 
-# Properties to receive via API on creation
-class UserCreate(UserBase):
-    email: EmailStr
-    password: str
-
-
-# Properties to receive via API on update
 class UserUpdate(UserBase):
+    """
+    User properties to receive via API on update.
+    """
+
     password: Optional[str] = None
+    email: Optional[EmailStr] = None
+    is_active: Optional[bool] = True
+    is_superuser: bool = False
 
 
-class UserInDBBase(UserBase):
-    _id: Optional[PydanticObjectId] = None
+class User(PrivateUserBase):
+    """
+    User properties returned by API. Contains private
+    user information such as email, is_active, auth provider.
 
-    class Config:
-        orm_mode = True
+    Should only be returned to admins or self.
+    """
 
-
-# Additional properties to return via API
-class User(UserInDBBase):
+    id: Optional[PydanticObjectId] = Field(..., alias="_id")
     uuid: UUID
-
-
-# Additional properties stored in DB
-class UserInDB(UserInDBBase):
-    hashed_password: str
