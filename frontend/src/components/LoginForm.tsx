@@ -88,13 +88,17 @@ export default function LoginForm() {
     try {
       const formData = new FormData()
       formData.append('username', data.email)
-      formData.append('password', data.password)
+      formData.append('password', data.password as string)
       await login(formData)
       showSnackBar('Login successful.', 'success')
       navigate('/')
     } catch (error) {
       let msg
-      if (error instanceof AxiosError && typeof error.response.data.detail == 'string')
+      if (
+        error instanceof AxiosError &&
+        error.response &&
+        typeof error.response.data.detail == 'string'
+      )
         msg = error.response.data.detail
       else if (error instanceof Error) msg = error.message
       else msg = String(error)
@@ -142,7 +146,6 @@ export default function LoginForm() {
             fullWidth
             id='email'
             label='Email address'
-            name='email'
             autoComplete='email'
             autoFocus
             error={!!errors.email}
@@ -153,7 +156,6 @@ export default function LoginForm() {
             margin='normal'
             required
             fullWidth
-            name='password'
             label='Password'
             type='password'
             id='password'

@@ -4,8 +4,8 @@ import authService from '../services/auth.service'
 import { User } from '../models/user'
 
 type AuthContextType = {
-  user: User | null
-  setUser: (user: User) => void
+  user: User | undefined
+  setUser: (user: User | undefined) => void
   login: (data: FormData) => void
   logout: () => void
 }

@@ -48,9 +48,9 @@ export default function UserProfile(props: UserProfileProps) {
   }, [userProfile])
 
   const onSubmit: SubmitHandler<User> = async (data) => {
-    let updatedUser
+    let updatedUser: User
     try {
-      if (currentUser.uuid === userProfile.uuid) {
+      if (currentUser?.uuid === userProfile.uuid) {
         // Updating user profile.
         updatedUser = await userService.updateProfile(data)
         setUser(updatedUser)
@@ -60,17 +60,20 @@ export default function UserProfile(props: UserProfileProps) {
         updatedUser = await userService.updateUser(userProfile.uuid, data)
         showSnackBar('User profile updated successfully.', 'success')
       }
+      if (onUserUpdated) {
+        onUserUpdated(updatedUser)
+      }
     } catch (error) {
       let msg
-      if (error instanceof AxiosError && typeof error.response.data.detail == 'string')
+      if (
+        error instanceof AxiosError &&
+        error.response &&
+        typeof error.response.data.detail == 'string'
+      )
         msg = error.response.data.detail
       else if (error instanceof Error) msg = error.message
       else msg = String(error)
       showSnackBar(msg, 'error')
-    }
-
-    if (onUserUpdated) {
-      onUserUpdated(updatedUser)
     }
   }
 
@@ -118,7 +121,6 @@ export default function UserProfile(props: UserProfileProps) {
             <Grid item xs={12} sm={6}>
               <TextField
                 autoComplete='given-name'
-                name='first_name'
                 fullWidth
                 id='firstName'
                 label='First Name'
@@ -131,7 +133,6 @@ export default function UserProfile(props: UserProfileProps) {
                 fullWidth
                 id='last_name'
                 label='Last Name'
-                name='lastName'
                 autoComplete='family-name'
                 {...register('last_name')}
               />
@@ -141,7 +142,6 @@ export default function UserProfile(props: UserProfileProps) {
                 fullWidth
                 id='email'
                 label='Email Address'
-                name='email'
                 autoComplete='email'
                 required
                 disabled={
@@ -159,7 +159,6 @@ export default function UserProfile(props: UserProfileProps) {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  name='provider'
                   label='Connected with'
                   id='provider'
                   disabled={true}
@@ -176,7 +175,6 @@ export default function UserProfile(props: UserProfileProps) {
               <Grid item xs={12}>
                 <TextField
                   fullWidth
-                  name='password'
                   label='Password'
                   type='password'
                   id='password'
@@ -192,7 +190,6 @@ export default function UserProfile(props: UserProfileProps) {
                   <FormControlLabel
                     control={
                       <Checkbox
-                        name='is_active'
                         defaultChecked={userProfile.is_active}
                         color='primary'
                         {...register('is_active')}
@@ -206,7 +203,6 @@ export default function UserProfile(props: UserProfileProps) {
                   <FormControlLabel
                     control={
                       <Checkbox
-                        name='is_superuser'
                         defaultChecked={userProfile.is_superuser}
                         color='primary'
                         {...register('is_superuser')}

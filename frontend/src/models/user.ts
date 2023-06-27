@@ -6,6 +6,6 @@ export interface User {
   last_name?: string
   provider?: string
   picture?: string
-  is_active: boolean
-  is_superuser: boolean
+  is_active?: boolean
+  is_superuser?: boolean
 }

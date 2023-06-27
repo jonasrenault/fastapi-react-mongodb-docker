@@ -32,7 +32,11 @@ export default function RegisterForm() {
       navigate('/login')
     } catch (error) {
       let msg
-      if (error instanceof AxiosError && typeof error.response.data.detail == 'string')
+      if (
+        error instanceof AxiosError &&
+        error.response &&
+        typeof error.response.data.detail == 'string'
+      )
         msg = error.response.data.detail
       else if (error instanceof Error) msg = error.message
       else msg = String(error)
@@ -118,7 +122,6 @@ export default function RegisterForm() {
                 <TextField
                   required
                   fullWidth
-                  name='password'
                   label='Password'
                   type='password'
                   id='password'

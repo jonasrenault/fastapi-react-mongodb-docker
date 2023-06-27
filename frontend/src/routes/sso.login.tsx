@@ -38,7 +38,11 @@ export default function SSOLogin() {
         showSnackBar('Login successful.', 'success')
       } catch (error) {
         let msg
-        if (error instanceof AxiosError && typeof error.response.data.detail == 'string')
+        if (
+          error instanceof AxiosError &&
+          error.response &&
+          typeof error.response.data.detail == 'string'
+        )
           msg = error.response.data.detail
         else if (error instanceof Error) msg = error.message
         else msg = String(error)

@@ -134,7 +134,6 @@ it('should delete user from the list', async () => {
   const {
     getAllByRole,
     getByRole,
-    queryByRole,
     getByTestId,
     queryByTestId,
     getByLabelText,
@@ -163,7 +162,7 @@ it('should delete user from the list', async () => {
   // click on delete button. Expect confirmation modal to be shown
   const deleteBtn = within(userItems[2]).getByRole('button', { name: 'delete' })
   await user.click(deleteBtn)
-  const confirmBtn = queryByRole('button', { name: 'Confirm' })
+  const confirmBtn = getByRole('button', { name: 'Confirm' })
   await waitFor(() => {
     expect(confirmBtn).toBeVisible()
   })

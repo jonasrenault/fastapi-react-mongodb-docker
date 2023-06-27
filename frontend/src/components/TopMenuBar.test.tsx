@@ -1,13 +1,14 @@
 // @vitest-environment happy-dom
 
-import { expect, it } from 'vitest'
+import { render, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
-import { waitFor, render } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { createMemoryRouter, RouterProvider } from 'react-router-dom'
+import { RouterProvider, createMemoryRouter } from 'react-router-dom'
+import { expect, it } from 'vitest'
 import { AuthProvider } from '../contexts/auth'
 import { SnackBarProvider } from '../contexts/snackbar'
+import { User } from '../models/user'
 import TopMenuBar from './TopMenuBar'
 
 const API_URL = import.meta.env.VITE_BACKEND_API_URL
