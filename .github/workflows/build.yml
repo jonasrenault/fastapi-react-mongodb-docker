@@ -7,7 +7,7 @@ on:
       - main
 
   workflow_run:
-    workflows: ["Run tests"]
+    workflows: ["Run tests and linting"]
     branches: [main]
     types:
       - completed
