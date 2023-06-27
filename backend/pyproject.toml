@@ -23,6 +23,7 @@ passlib = "^1.7.4"
 bcrypt = "^4.0.1"
 beanie = "^1.17.0"
 python-dotenv = "^0.21.1"
+fastapi-sso = "^0.6.4"
 
 [tool.poetry.group.dev]
 optional = true

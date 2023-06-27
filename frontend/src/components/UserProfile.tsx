@@ -1,12 +1,31 @@
-import { useForm } from 'react-hook-form'
-import { Button, TextField, Grid, Box, FormControlLabel, Checkbox } from '@mui/material'
+import {
+  Avatar,
+  Box,
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  FormControlLabel,
+  Grid,
+  IconButton,
+  TextField,
+} from '@mui/material'
+import { useEffect, useState } from 'react'
+import { useForm, SubmitHandler } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/auth'
 import { useSnackBar } from '../contexts/snackbar'
-import { useAuth, User } from '../contexts/auth'
 import userService from '../services/user.service'
-import { useEffect } from 'react'
+import { GoogleIcon } from './LoginForm'
+import { User } from '../models/user'
+import { AxiosError } from 'axios'
 
 interface UserProfileProps {
   userProfile: User
+  onUserUpdated?: (user: User) => void
+  allowDelete: boolean
 }
 
 export default function UserProfile(props: UserProfileProps) {
@@ -19,14 +38,16 @@ export default function UserProfile(props: UserProfileProps) {
   } = useForm<User>({
     defaultValues: userProfile,
   })
-  const { user: currentUser, setUser } = useAuth()
+  const navigate = useNavigate()
+  const { user: currentUser, setUser, logout } = useAuth()
   const { showSnackBar } = useSnackBar()
+  const [open, setOpen] = useState(false)
 
   useEffect(() => {
     reset(userProfile)
   }, [userProfile])
 
-  const onSubmit = async (data) => {
+  const onSubmit: SubmitHandler<User> = async (data) => {
     let updatedUser
     try {
       if (currentUser.uuid === userProfile.uuid) {
@@ -40,16 +61,31 @@ export default function UserProfile(props: UserProfileProps) {
         showSnackBar('User profile updated successfully.', 'success')
       }
     } catch (error) {
-      const msg =
-        error.response && typeof error.response.data.detail == 'string'
-          ? error.response.data.detail
-          : error.message
+      let msg
+      if (error instanceof AxiosError && typeof error.response.data.detail == 'string')
+        msg = error.response.data.detail
+      else if (error instanceof Error) msg = error.message
+      else msg = String(error)
       showSnackBar(msg, 'error')
     }
 
     if (onUserUpdated) {
       onUserUpdated(updatedUser)
     }
+  }
+
+  const handleDeleteProfile = async () => {
+    setOpen(true)
+  }
+
+  const handleCancel = () => setOpen(false)
+
+  const handleConfirm = async () => {
+    setOpen(false)
+    await userService.deleteSelf()
+    showSnackBar('You account has been deleted.', 'success')
+    logout()
+    navigate('/')
   }
 
   return (
@@ -61,6 +97,15 @@ export default function UserProfile(props: UserProfileProps) {
           alignItems: 'center',
         }}
       >
+        <IconButton aria-label='upload picture' component='label' sx={{ mt: 1 }}>
+          <input hidden accept='image/*' type='file' />
+          <Avatar
+            sx={{ width: 56, height: 56 }}
+            alt={userProfile.first_name + ' ' + userProfile.last_name}
+            src={userProfile.picture && userProfile.picture}
+          />
+        </IconButton>
+
         <Box
           component='form'
           onSubmit={handleSubmit(onSubmit)}
@@ -99,22 +144,48 @@ export default function UserProfile(props: UserProfileProps) {
                 name='email'
                 autoComplete='email'
                 required
+                disabled={
+                  userProfile.provider !== null &&
+                  userProfile.provider !== undefined &&
+                  userProfile.provider !== ''
+                }
                 error={!!errors.email}
-                helperText={errors.email && 'Please provide an email.'}
+                helperText={errors.email && 'Please provide an email address.'}
                 {...register('email', { required: true })}
               />
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                name='password'
-                label='Password'
-                type='password'
-                id='password'
-                autoComplete='new-password'
-                {...register('password')}
-              />
-            </Grid>
+
+            {userProfile.provider && (
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  name='provider'
+                  label='Connected with'
+                  id='provider'
+                  disabled={true}
+                  variant='standard'
+                  InputProps={{
+                    startAdornment: <GoogleIcon sx={{ mr: 1 }} />,
+                  }}
+                  {...register('provider')}
+                />
+              </Grid>
+            )}
+
+            {!userProfile.provider && (
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  name='password'
+                  label='Password'
+                  type='password'
+                  id='password'
+                  autoComplete='new-password'
+                  {...register('password')}
+                />
+              </Grid>
+            )}
+
             {currentUser?.is_superuser && (
               <>
                 <Grid item xs={12}>
@@ -149,8 +220,38 @@ export default function UserProfile(props: UserProfileProps) {
           <Button type='submit' fullWidth variant='contained' sx={{ mt: 3, mb: 2 }}>
             Update
           </Button>
+          {props.allowDelete && (
+            <Button
+              fullWidth
+              variant='outlined'
+              sx={{ mb: 2 }}
+              color='error'
+              onClick={handleDeleteProfile}
+            >
+              Delete my account
+            </Button>
+          )}
         </Box>
       </Box>
+      <Dialog
+        open={open}
+        onClose={handleCancel}
+        aria-describedby='alert-profile-dialog-description'
+      >
+        <DialogContent>
+          <DialogContentText id='alert-profile-dialog-description'>
+            Are you sure you want to delete your account ?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancel} autoFocus>
+            Cancel
+          </Button>
+          <Button onClick={handleConfirm} variant='contained' color='primary'>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   )
 }

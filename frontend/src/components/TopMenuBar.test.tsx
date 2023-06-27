@@ -103,9 +103,9 @@ it('should show profile menu when clicked', async () => {
   await user.click(menuBtn)
 
   const menuItems = await findAllByRole('menuitem')
-  expect(menuItems).toHaveLength(4)
+  expect(menuItems).toHaveLength(2)
   expect(menuItems[0]).toHaveTextContent(/Profile/i)
-  expect(menuItems[3]).toHaveTextContent(/Logout/i)
+  expect(menuItems[1]).toHaveTextContent(/Logout/i)
 })
 
 it('should show users menu for admins', async () => {

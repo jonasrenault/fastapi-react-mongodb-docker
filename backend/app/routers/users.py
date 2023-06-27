@@ -41,6 +41,16 @@ async def register_user(
         )
 
 
+@router.get("", response_model=List[schemas.User])
+async def get_users(
+    limit: Optional[int] = 10,
+    offset: Optional[int] = 0,
+    admin_user: models.User = Depends(get_current_active_superuser),
+):
+    users = await models.User.find_all().skip(offset).limit(limit).to_list()
+    return users
+
+
 @router.get("/me", response_model=schemas.User)
 async def get_profile(
     current_user: models.User = Depends(get_current_active_user),
@@ -76,6 +86,12 @@ async def update_profile(
         raise HTTPException(
             status_code=400, detail="User with that email already exists."
         )
+
+
+@router.delete("/me", response_model=schemas.User)
+async def delete_me(user: models.User = Depends(get_current_active_user)):
+    await user.delete()
+    return user
 
 
 @router.patch("/{userid}", response_model=schemas.User)
@@ -134,16 +150,6 @@ async def get_user(
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return user
-
-
-@router.get("", response_model=List[schemas.User])
-async def get_users(
-    limit: Optional[int] = 10,
-    offset: Optional[int] = 0,
-    admin_user: models.User = Depends(get_current_active_superuser),
-):
-    users = await models.User.find_all().skip(offset).limit(limit).to_list()
-    return users
 
 
 @router.delete("/{userid}", response_model=schemas.User)
