@@ -1,4 +1,4 @@
-name: Run tests
+name: Run tests and linting
 
 on:
   # Trigger the workflow on push or pull request,
@@ -18,9 +18,46 @@ env: # environment variables (available in any part of the action)
   MONGODB_VERSION: 6.0
 
 jobs:
+  run-js-linters:
+    name: Run JS linters
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Node.js dependencies
+        run: npm ci
+
+      - name: Run eslint
+        run: npm run lint
+
+  run-python-linters:
+    name: Run Python linters
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Run black
+        uses: psf/black@stable
+
   test-backend:
     name: Run backend unit tests
     runs-on: ubuntu-latest
+    needs: run-python-linters
     defaults:
       run:
         working-directory: ./backend
@@ -73,6 +110,7 @@ jobs:
   test-frontend:
     name: Run frontend unit tests
     runs-on: ubuntu-latest
+    needs: run-js-linters
     defaults:
       run:
         working-directory: ./frontend

@@ -199,6 +199,7 @@ export default function UserProfile(props: UserProfileProps) {
                       />
                     }
                     label='Is Active'
+                    disabled={currentUser.uuid === userProfile.uuid}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -212,6 +213,7 @@ export default function UserProfile(props: UserProfileProps) {
                       />
                     }
                     label='Is Super User'
+                    disabled={currentUser.uuid === userProfile.uuid}
                   />
                 </Grid>
               </>

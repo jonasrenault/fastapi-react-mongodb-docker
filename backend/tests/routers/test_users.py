@@ -113,3 +113,21 @@ async def test_update_profile_existing_email(client: AsyncClient) -> None:
     response = r.json()
     assert r.status_code == 400
     assert response["detail"] == "User with that email already exists."
+
+
+@pytest.mark.anyio
+async def test_update_profile_cannot_set_superuser(client: AsyncClient) -> None:
+    # create user
+    user = await create_test_user()
+    token_headers = await generate_user_auth_headers(client, user)
+
+    # test user cannot set itself to superuser or inactive
+    data = {"is_superuser": True, "is_active": False}
+    r = await client.patch(
+        f"{settings.API_V1_STR}/users/me", json=data, headers=token_headers
+    )
+    assert r.status_code == 200
+
+    updated_user = await User.get(user.id)
+    assert updated_user.is_superuser == False
+    assert updated_user.is_active == True

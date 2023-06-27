@@ -28,10 +28,12 @@ class PrivateUserBase(UserBase):
 class UserUpdate(UserBase):
     """
     User properties to receive via API on update.
-    Password can be modified, but not email.
     """
 
     password: Optional[str] = None
+    email: Optional[EmailStr] = None
+    is_active: Optional[bool] = True
+    is_superuser: bool = False
 
 
 class User(PrivateUserBase):
@@ -43,13 +45,4 @@ class User(PrivateUserBase):
     """
 
     id: Optional[PydanticObjectId] = Field(..., alias="_id")
-    uuid: UUID
-
-
-class UserProfile(UserBase):
-    """
-    User properties returned by API. Contains only public information
-    which can be viewed by all.
-    """
-
     uuid: UUID

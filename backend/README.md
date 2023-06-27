@@ -31,6 +31,16 @@ Navigate to `http://localhost:8000/api/v1/` to access the root API path.
 Navigate to `http://localhost:8000/docs` to access the API's documentation.
 Navigate to `http://localhost:8000/redoc` to access the API's alternative doc built with ReDoc.
 
+## Running the tests
+
+Run
+
+```console
+pytest
+```
+
+to run the unit test for the backend app.
+
 ## Configuration
 
 The project uses Pydantic's settings management through FastAPI. Documentation on how the settings work is availabe [here](https://fastapi.tiangolo.com/advanced/settings/).

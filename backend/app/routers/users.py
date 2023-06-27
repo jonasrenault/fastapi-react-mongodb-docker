@@ -69,7 +69,7 @@ async def update_profile(
     """
     Update current user.
     """
-    update_data = update.dict(exclude_unset=True)
+    update_data = update.dict(exclude={"is_active", "is_superuser"}, exclude_unset=True)
     try:
         if update_data["password"]:
             update_data["hashed_password"] = get_hashed_password(
