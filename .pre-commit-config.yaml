@@ -7,7 +7,7 @@ repos:
   - id: check-yaml
   - id: debug-statements
 - repo: https://github.com/psf/black
-  rev: 23.1.0
+  rev: 23.3.0
   hooks:
     - id: black
       # It is recommended to specify the latest version of Python
@@ -16,7 +16,7 @@ repos:
       # https://pre-commit.com/#top_level-default_language_version
       language_version: python3.11
 - repo: https://github.com/python-poetry/poetry
-  rev: '1.3.1'
+  rev: '1.5.1'
   hooks:
     - id: poetry-check
       args: ["--directory", "backend"]
