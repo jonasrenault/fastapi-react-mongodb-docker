@@ -2,6 +2,8 @@
 
 [![Tests](https://github.com/jonasrenault/fastapi-react-mongodb-docker/actions/workflows/test.yml/badge.svg)](https://github.com/jonasrenault/fastapi-react-mongodb-docker/actions/workflows/test.yml)
 
+[![Build and deploy](https://github.com/jonasrenault/fastapi-react-mongodb-docker/actions/workflows/build.yml/badge.svg)](https://github.com/jonasrenault/fastapi-react-mongodb-docker/actions/workflows/build.yml)
+
 This is a template application for a FARM stack. FARM stands for FastAPI, React, MongoDB.
 
 ## Project structure
