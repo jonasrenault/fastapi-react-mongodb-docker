@@ -21,7 +21,7 @@ interface Feature {
   title: string
   desc: string
   github: string
-  stars: int | null
+  stars: number | null
 }
 
 const FEATURES: Array<Feature> = [
@@ -173,7 +173,7 @@ export default function Home() {
       </Box>
       <Container sx={{ py: 8 }} maxWidth='md'>
         <Box sx={{ mb: 4 }}>
-          <Typography variant='p'>
+          <Typography variant='body1'>
             FARMD is a minimalist starter template for a FARM application stack ready to run with
             docker. It offers basic user management, with options for OAuth2 support via Google, so
             that you can get started straight away. It is built with a clean design & minimal
