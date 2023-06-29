@@ -55,7 +55,7 @@ const FEATURES: Array<Feature> = [
     title: 'React Hook Form',
     desc: 'React Hook Form provides intuitive & flexible form support with React.',
     github: 'react-hook-form/react-hook-form',
-    stars: 35591,
+    stars: null,
   },
   {
     img: 'fastapi-mark.svg',
@@ -80,11 +80,15 @@ export default function Home() {
   const formatter = Intl.NumberFormat('en', { notation: 'compact', maximumSignificantDigits: 3 })
 
   const getStars = async () => {
-    const results = await Promise.all(
-      features.map((feature) => axios.get(`https://api.github.com/repos/${feature.github}`)),
+    const data = await Promise.all(
+      features.map((feature) => fetch(`https://api.github.com/repos/${feature.github}`)),
     )
+    const results = await Promise.all(data.map((res) => res.json()))
     setFeatures((_features) =>
-      _features.map((feature, idx) => ({ ...feature, stars: results[idx].data.stargazers_count })),
+      _features.map((feature, idx) => ({
+        ...feature,
+        stars: results[idx].stargazers_count,
+      })),
     )
   }
 
