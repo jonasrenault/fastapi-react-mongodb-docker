@@ -1,8 +1,21 @@
 # Fastapi-React-Mongodb-Docker
 
-[![Tests](https://github.com/jonasrenault/fastapi-react-mongodb-docker/actions/workflows/test.yml/badge.svg)](https://github.com/jonasrenault/fastapi-react-mongodb-docker/actions/workflows/test.yml)
+![Tests](https://github.com/jonasrenault/fastapi-react-mongodb-docker/actions/workflows/test.yml/badge.svg)
+![Build](https://github.com/jonasrenault/fastapi-react-mongodb-docker/actions/workflows/build.yml/badge.svg)
+[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+![python_version](https://img.shields.io/badge/Python-%3E=3.10-blue)
 
 This is a template application for a FARM stack. FARM stands for FastAPI, React, MongoDB.
+
+## Features
+
+### Clean design with minimal dependencies
+
+[![API docs](frontend/public/farmd-1.png)](https://github.com/jonasrenault/fastapi-react-mongodb-docker)
+
+### Basic user management with OAuth2 SSO
+
+[![API docs](frontend/public/farmd-2.png)](https://github.com/jonasrenault/fastapi-react-mongodb-docker)
 
 ## Project structure
 

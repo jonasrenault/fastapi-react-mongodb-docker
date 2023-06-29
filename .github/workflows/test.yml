@@ -1,4 +1,4 @@
-name: Run tests and linting
+name: Test
 
 on:
   # Trigger the workflow on push or pull request,
