@@ -7,6 +7,8 @@
 
 This is a template application for a FARM stack. FARM stands for FastAPI, React, MongoDB.
 
+## Features
+
 ### Clean design with minimal dependencies
 
 [![API docs](frontend/public/farmd-1.png)](https://github.com/jonasrenault/fastapi-react-mongodb-docker)
