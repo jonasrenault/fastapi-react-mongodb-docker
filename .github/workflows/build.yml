@@ -1,4 +1,4 @@
-name: Build and deploy
+name: Build
 
 on:
   # Trigger the workflow on push to main branch
@@ -7,7 +7,7 @@ on:
       - main
 
   workflow_run:
-    workflows: ["Run tests and linting"]
+    workflows: ["Test"]
     branches: [main]
     types:
       - completed
