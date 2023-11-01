@@ -1,13 +1,13 @@
-import { expect, it, vi } from 'vitest'
-import { http, HttpResponse } from 'msw'
-import { setupServer } from 'msw/node'
 import { render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { HttpResponse, http } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter } from 'react-router-dom'
+import { afterAll, afterEach, beforeAll, expect, it, vi } from 'vitest'
 import { AuthProvider } from '../contexts/auth'
 import { SnackBarProvider } from '../contexts/snackbar'
-import UserProfile from './UserProfile'
 import { User } from '../models/user'
+import UserProfile from './UserProfile'
 
 const API_URL = import.meta.env.VITE_BACKEND_API_URL
 

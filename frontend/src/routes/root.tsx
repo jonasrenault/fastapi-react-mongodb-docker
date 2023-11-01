@@ -1,7 +1,6 @@
-import * as React from 'react'
+import { Box, Toolbar } from '@mui/material'
 import { Outlet } from 'react-router-dom'
 import TopMenuBar from '../components/TopMenuBar'
-import { Box, Toolbar } from '@mui/material'
 
 export default function Root() {
   return (
