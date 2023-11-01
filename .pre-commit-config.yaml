@@ -7,7 +7,7 @@ repos:
   - id: check-yaml
   - id: debug-statements
 - repo: https://github.com/psf/black
-  rev: 23.3.0
+  rev: 23.10.1
   hooks:
     - id: black
       # It is recommended to specify the latest version of Python
