@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom'
 import ErrorPage from './error-page'
-import Home from './routes/home'
+import Home, { loader as homeLoader } from './routes/home'
 import Login from './routes/login'
 import { Profile } from './routes/profile'
 import Register from './routes/register'
@@ -14,7 +14,7 @@ export const routes = [
     element: <Root />,
     errorElement: <ErrorPage />,
     children: [
-      { index: true, element: <Home /> },
+      { index: true, element: <Home />, loader: homeLoader },
       {
         path: 'sso-login-callback',
         element: <SSOLogin />,

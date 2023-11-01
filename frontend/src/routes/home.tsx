@@ -12,15 +12,20 @@ import {
   Link,
   Typography,
 } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useLoaderData } from 'react-router-dom'
 
-interface Feature {
+type Feature = {
   img: string
   alt: string
   title: string
   desc: string
   github: string
   stars: number | null
+}
+
+type FeaturesCache = {
+  date: string
+  features: Feature[]
 }
 
 const FEATURES: Array<Feature> = [
@@ -74,26 +79,36 @@ const FEATURES: Array<Feature> = [
   },
 ]
 
-export default function Home() {
-  const [features, setFeatures] = useState(FEATURES)
-  const formatter = Intl.NumberFormat('en', { notation: 'compact', maximumSignificantDigits: 3 })
-
-  const getStars = async () => {
-    const data = await Promise.all(
-      features.map((feature) => fetch(`https://api.github.com/repos/${feature.github}`)),
-    )
-    const results = await Promise.all(data.map((res) => res.json()))
-    setFeatures((_features) =>
-      _features.map((feature, idx) => ({
-        ...feature,
-        stars: results[idx].stargazers_count,
-      })),
-    )
+/**
+ * Get stars count for github repositories and save values in cache in
+ * localStorage.
+ *
+ * @returns {features: Feature[]}
+ */
+export async function loader() {
+  const today = new Date().toDateString()
+  const cacheValue = localStorage.getItem('farmd-features')
+  if (cacheValue !== null) {
+    const cache = JSON.parse(cacheValue) as FeaturesCache
+    if ('date' in cache && cache.date === today) return { features: cache.features }
   }
 
-  useEffect(() => {
-    getStars()
-  }, [])
+  const data = await Promise.all(
+    FEATURES.map((feature) => fetch(`https://api.github.com/repos/${feature.github}`)),
+  )
+  const results = await Promise.all(data.map((res) => res.json()))
+  const features = FEATURES.map((feature, idx) => ({
+    ...feature,
+    stars: results[idx].stargazers_count,
+  }))
+  localStorage.setItem('farmd-features', JSON.stringify({ date: today, features }))
+
+  return { features }
+}
+
+export default function Home() {
+  const { features } = useLoaderData() as { features: Feature[] }
+  const formatter = Intl.NumberFormat('en', { notation: 'compact', maximumSignificantDigits: 3 })
 
   return (
     <main>
