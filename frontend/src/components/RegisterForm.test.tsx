@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest'
-import { rest } from 'msw'
+import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -13,19 +13,19 @@ const API_URL = import.meta.env.VITE_BACKEND_API_URL
 const server = setupServer(
   // Upon loading the auth context tries to load user profile
   // return 401 to simulate logged out user
-  rest.get(API_URL + 'users/me', (req, res, ctx) => {
-    return res(ctx.status(401))
+  http.get(API_URL + 'users/me', () => {
+    return new HttpResponse(null, {
+      status: 401,
+    })
   }),
 
-  rest.post(API_URL + 'users', (req, res, ctx) => {
-    return res(
-      ctx.json({
-        email: 'john@example.com',
-        is_active: true,
-        is_superuser: false,
-        uuid: '48f0c771-1d00-4595-b1b4-f2ee060237bc',
-      }),
-    )
+  http.post(API_URL + 'users', () => {
+    return HttpResponse.json({
+      email: 'john@example.com',
+      is_active: true,
+      is_superuser: false,
+      uuid: '48f0c771-1d00-4595-b1b4-f2ee060237bc',
+    })
   }),
 )
 
@@ -100,8 +100,8 @@ it('should handle server errors', async () => {
 
   const error = 'User with that email already exists'
   server.use(
-    rest.post(API_URL + 'users', (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({ detail: error }))
+    http.post(API_URL + 'users', () => {
+      return HttpResponse.json({ detail: error }, { status: 500 })
     }),
   )
 

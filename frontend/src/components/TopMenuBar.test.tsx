@@ -1,8 +1,6 @@
-// @vitest-environment happy-dom
-
 import { render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { rest } from 'msw'
+import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { RouterProvider, createMemoryRouter } from 'react-router-dom'
 import { expect, it } from 'vitest'
@@ -20,8 +18,10 @@ const profile: User = {
 }
 
 const server = setupServer(
-  rest.get(API_URL + 'users/me', (req, res, ctx) => {
-    return res(ctx.status(401))
+  http.get(API_URL + 'users/me', () => {
+    return new HttpResponse(null, {
+      status: 401,
+    })
   }),
 )
 
@@ -72,8 +72,8 @@ function setup() {
 
 function setupLogged() {
   server.use(
-    rest.get(API_URL + 'users/me', (req, res, ctx) => {
-      return res(ctx.json(profile))
+    http.get(API_URL + 'users/me', () => {
+      return HttpResponse.json(profile)
     }),
   )
   return setup()
@@ -116,8 +116,8 @@ it('should show users menu for admins', async () => {
     uuid: '48f0c771-1d00-4595-b1b4-f2ee060237bc',
   }
   server.use(
-    rest.get(API_URL + 'users/me', (req, res, ctx) => {
-      return res(ctx.json(admin))
+    http.get(API_URL + 'users/me', () => {
+      return HttpResponse.json(admin)
     }),
   )
   const { getByText, getByLabelText } = setup()
