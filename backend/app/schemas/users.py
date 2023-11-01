@@ -44,5 +44,5 @@ class User(PrivateUserBase):
     Should only be returned to admins or self.
     """
 
-    id: Optional[PydanticObjectId] = Field(..., alias="_id")
+    id: PydanticObjectId = Field()
     uuid: UUID

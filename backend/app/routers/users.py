@@ -70,7 +70,9 @@ async def update_profile(
     """
     Update current user.
     """
-    update_data = update.dict(exclude={"is_active", "is_superuser"}, exclude_unset=True)
+    update_data = update.model_dump(
+        exclude={"is_active", "is_superuser"}, exclude_unset=True
+    )
     try:
         if update_data["password"]:
             update_data["hashed_password"] = get_hashed_password(
@@ -79,7 +81,7 @@ async def update_profile(
             del update_data["password"]
     except KeyError:
         pass
-    current_user = current_user.copy(update=update_data)
+    current_user = current_user.model_copy(update=update_data)
     try:
         await current_user.save()
         return current_user
@@ -118,7 +120,7 @@ async def update_user(
     user = await models.User.find_one({"uuid": userid})
     if update.password is not None:
         update.password = get_hashed_password(update.password)
-    user = user.copy(update=update.dict(exclude_unset=True))
+    user = user.model_copy(update=update.model_dump(exclude_unset=True))
     try:
         await user.save()
         return user

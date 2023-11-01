@@ -20,7 +20,8 @@ def anyio_backend():
 
 async def clear_database(server: FastAPI) -> None:
     test_db = server.client[MONGO_TEST_DB]
-    for collection in await test_db.list_collections():
+    collections = await test_db.list_collections()
+    async for collection in collections:
         await test_db[collection["name"]].delete_many({})
 
 

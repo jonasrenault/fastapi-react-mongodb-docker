@@ -1,11 +1,9 @@
-// @vitest-environment happy-dom
-
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { rest } from 'msw'
+import { HttpResponse, http } from 'msw'
 import { setupServer } from 'msw/node'
-import { createMemoryRouter, RouterProvider } from 'react-router-dom'
-import { expect, it } from 'vitest'
+import { RouterProvider, createMemoryRouter } from 'react-router-dom'
+import { afterAll, afterEach, beforeAll, expect, it } from 'vitest'
 import { AuthProvider } from '../contexts/auth'
 import { SnackBarProvider } from '../contexts/snackbar'
 import { User } from '../models/user'
@@ -43,11 +41,11 @@ const users: Array<User> = [
 ]
 
 const server = setupServer(
-  rest.get(API_URL + 'users/me', (req, res, ctx) => {
-    return res(ctx.json(profile))
+  http.get(API_URL + 'users/me', () => {
+    return HttpResponse.json(profile)
   }),
-  rest.get(API_URL + 'users', (req, res, ctx) => {
-    return res(ctx.json(users))
+  http.get(API_URL + 'users', () => {
+    return HttpResponse.json(users)
   }),
 )
 
@@ -102,8 +100,8 @@ it('should render user list', async () => {
 
 it('should redirect if loader throws error', async () => {
   server.use(
-    rest.get(API_URL + 'users', (req, res, ctx) => {
-      return res(ctx.status(401), ctx.json('Invalid credentials.'))
+    http.get(API_URL + 'users', () => {
+      return HttpResponse.json({ detail: 'Invalid credentials.' }, { status: 401 })
     }),
   )
   const { router } = setup()
@@ -145,8 +143,10 @@ it('should delete user from the list', async () => {
   })
 
   server.use(
-    rest.delete(API_URL + `users/${users[2].uuid}`, (req, res, ctx) => {
-      return res(ctx.status(200))
+    http.delete(API_URL + `users/${users[2].uuid}`, () => {
+      return new HttpResponse(null, {
+        status: 200,
+      })
     }),
   )
 
@@ -197,17 +197,15 @@ it('should update user info in the user list', async () => {
   await waitFor(() => expect(getByRole('list')).toBeInTheDocument())
 
   server.use(
-    rest.patch(API_URL + `users/${users[2].uuid}`, (req, res, ctx) => {
-      return res(
-        ctx.json({
-          email: 'ericsmith@gmail.com',
-          is_active: true,
-          is_superuser: false,
-          first_name: 'Brad',
-          last_name: 'Pitt',
-          uuid: 'd1ba04b9-cd9f-40fe-8956-8a0198f47884',
-        }),
-      )
+    http.patch(API_URL + `users/${users[2].uuid}`, () => {
+      return HttpResponse.json({
+        email: 'ericsmith@gmail.com',
+        is_active: true,
+        is_superuser: false,
+        first_name: 'Brad',
+        last_name: 'Pitt',
+        uuid: 'd1ba04b9-cd9f-40fe-8956-8a0198f47884',
+      })
     }),
   )
 

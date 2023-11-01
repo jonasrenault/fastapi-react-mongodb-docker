@@ -1,9 +1,9 @@
-import { expect, it } from 'vitest'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
 import { render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { HttpResponse, http } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter } from 'react-router-dom'
+import { afterAll, afterEach, beforeAll, expect, it } from 'vitest'
 import { AuthProvider } from '../contexts/auth'
 import { SnackBarProvider } from '../contexts/snackbar'
 import LoginForm from './LoginForm'
@@ -11,20 +11,21 @@ import LoginForm from './LoginForm'
 const API_URL = import.meta.env.VITE_BACKEND_API_URL
 
 const ACCESS_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'
+
 const server = setupServer(
   // Upon loading the auth context tries to load user profile
   // return 401 to simulate logged out user
-  rest.get(API_URL + 'users/me', (req, res, ctx) => {
-    return res(ctx.status(401))
+  http.get(API_URL + 'users/me', () => {
+    return new HttpResponse(null, {
+      status: 401,
+    })
   }),
 
-  rest.post(API_URL + 'login/access-token', (req, res, ctx) => {
-    return res(
-      ctx.json({
-        access_token: ACCESS_TOKEN,
-        token_type: 'bearer',
-      }),
-    )
+  http.post(API_URL + 'login/access-token', () => {
+    return HttpResponse.json({
+      access_token: ACCESS_TOKEN,
+      token_type: 'bearer',
+    })
   }),
 )
 
@@ -83,15 +84,13 @@ it('should login user', async () => {
   const loginBtn = getByRole('button', { name: 'Sign In' })
 
   server.use(
-    rest.get(API_URL + 'users/me', (req, res, ctx) => {
-      return res(
-        ctx.json({
-          email: 'john@example.com',
-          is_active: true,
-          is_superuser: false,
-          uuid: '48f0c771-1d00-4595-b1b4-f2ee060237bc',
-        }),
-      )
+    http.get(API_URL + 'users/me', () => {
+      return HttpResponse.json({
+        email: 'john@example.com',
+        is_active: true,
+        is_superuser: false,
+        uuid: '48f0c771-1d00-4595-b1b4-f2ee060237bc',
+      })
     }),
   )
 
@@ -111,8 +110,8 @@ it('should handle server errors', async () => {
 
   const error = 'Incorrect email or password'
   server.use(
-    rest.post(API_URL + 'login/access-token', (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({ detail: error }))
+    http.post(API_URL + 'login/access-token', () => {
+      return HttpResponse.json({ detail: error }, { status: 500 })
     }),
   )
 

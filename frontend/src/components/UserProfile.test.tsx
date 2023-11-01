@@ -1,26 +1,24 @@
-import { expect, it, vi } from 'vitest'
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
 import { render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { HttpResponse, http } from 'msw'
+import { setupServer } from 'msw/node'
 import { MemoryRouter } from 'react-router-dom'
+import { afterAll, afterEach, beforeAll, expect, it, vi } from 'vitest'
 import { AuthProvider } from '../contexts/auth'
 import { SnackBarProvider } from '../contexts/snackbar'
-import UserProfile from './UserProfile'
 import { User } from '../models/user'
+import UserProfile from './UserProfile'
 
 const API_URL = import.meta.env.VITE_BACKEND_API_URL
 
 const server = setupServer(
-  rest.patch(API_URL + 'users/me', (req, res, ctx) => {
-    return res(
-      ctx.json({
-        email: 'john@example.com',
-        is_active: true,
-        is_superuser: false,
-        uuid: '48f0c771-1d00-4595-b1b4-f2ee060237bc',
-      }),
-    )
+  http.patch(API_URL + 'users/me', () => {
+    return HttpResponse.json({
+      email: 'john@example.com',
+      is_active: true,
+      is_superuser: false,
+      uuid: '48f0c771-1d00-4595-b1b4-f2ee060237bc',
+    })
   }),
 )
 
@@ -69,8 +67,8 @@ function setupForAdmin() {
   }
 
   server.use(
-    rest.get(API_URL + 'users/me', (req, res, ctx) => {
-      return res(ctx.json(currentUser))
+    http.get(API_URL + 'users/me', () => {
+      return HttpResponse.json(currentUser)
     }),
   )
 
@@ -86,8 +84,8 @@ function setupForUser() {
   }
 
   server.use(
-    rest.get(API_URL + 'users/me', (req, res, ctx) => {
-      return res(ctx.json(currentUser))
+    http.get(API_URL + 'users/me', () => {
+      return HttpResponse.json(currentUser)
     }),
   )
 
@@ -135,8 +133,8 @@ it('should update other user profile', async () => {
   const { getByRole, user, profile } = setupForAdmin()
 
   server.use(
-    rest.patch(API_URL + `users/${profile.uuid}`, (req, res, ctx) => {
-      return res(ctx.json(profile))
+    http.patch(API_URL + `users/${profile.uuid}`, () => {
+      return HttpResponse.json(profile)
     }),
   )
 
@@ -153,8 +151,8 @@ it('should call onUpdate', async () => {
     email: 'adam@example.com',
   }
   server.use(
-    rest.patch(API_URL + `users/${profile.uuid}`, (req, res, ctx) => {
-      return res(ctx.json(updatedProfile))
+    http.patch(API_URL + `users/${profile.uuid}`, () => {
+      return HttpResponse.json(updatedProfile)
     }),
   )
 
@@ -169,8 +167,8 @@ it('should handle server errors', async () => {
 
   const error = 'User with this email already exists'
   server.use(
-    rest.patch(API_URL + `users/me`, (req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({ detail: error }))
+    http.patch(API_URL + `users/me`, () => {
+      return HttpResponse.json({ detail: error }, { status: 500 })
     }),
   )
 
