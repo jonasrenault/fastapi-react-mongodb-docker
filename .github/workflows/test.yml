@@ -13,7 +13,7 @@ on:
       - main
 
 env: # environment variables (available in any part of the action)
-  NODE_VERSION: 19
+  NODE_VERSION: 20
   PYTHON_VERSION: 3.11
   MONGODB_VERSION: 6.0
 
@@ -27,12 +27,14 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Install Node.js dependencies
         run: npm ci
@@ -49,7 +51,7 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run black
         uses: psf/black@stable
@@ -64,37 +66,27 @@ jobs:
 
     steps:
       - name: Git checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Install poetry
+        run: pipx install poetry
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'poetry'
 
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0
         with:
           mongodb-version: ${{ env.MONGODB_VERSION }}
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-
-      - name: cache deps
-        id: cache-deps
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: pydeps-${{ hashFiles('**/poetry.lock') }}
-
       # Install dependencies. `--no-root` means "install all dependencies but not the project
       # itself", which is what you want to avoid caching _your_ code. The `if` statement
       # ensures this only runs on a cache miss.
       - name: Install dependencies
         run: poetry install --no-interaction --no-root --with dev
-        if: steps.cache-deps.outputs.cache-hit != 'true'
 
       - name: Test with pytest
         run: poetry run pytest --cov=app tests --cov-report html
@@ -117,10 +109,10 @@ jobs:
 
     steps:
       - name: Git checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
