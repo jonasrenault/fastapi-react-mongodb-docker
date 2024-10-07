@@ -1,4 +1,4 @@
-from typing import Iterator, Dict
+from typing import Dict, Iterator
 from unittest.mock import patch
 
 import pytest
@@ -6,8 +6,9 @@ from asgi_lifespan import LifespanManager
 from fastapi import FastAPI
 from httpx import AsyncClient
 
-from app.main import app
 from app.config.config import settings
+from app.main import app
+
 from .utils import get_user_auth_headers
 
 MONGO_TEST_DB = "farmdtest"

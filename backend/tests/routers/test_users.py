@@ -1,10 +1,11 @@
-import pytest
 from typing import Dict
 
+import pytest
 from httpx import AsyncClient
 
 from app.config.config import settings
 from app.models import User
+
 from ..utils import (
     create_test_user,
     generate_user_auth_headers,
@@ -129,5 +130,5 @@ async def test_update_profile_cannot_set_superuser(client: AsyncClient) -> None:
     assert r.status_code == 200
 
     updated_user = await User.get(user.id)
-    assert updated_user.is_superuser == False
-    assert updated_user.is_active == True
+    assert updated_user.is_superuser is False
+    assert updated_user.is_active is True

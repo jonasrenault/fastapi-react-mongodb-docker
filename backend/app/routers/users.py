@@ -1,17 +1,17 @@
-from typing import List, Optional, Any
+from typing import Any, List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Body, Depends
-from pymongo import errors
-from pydantic.networks import EmailStr
 from beanie.exceptions import RevisionIdWasChanged
+from fastapi import APIRouter, Body, Depends, HTTPException
+from pydantic.networks import EmailStr
+from pymongo import errors
 
+from .. import models, schemas
 from ..auth.auth import (
-    get_hashed_password,
     get_current_active_superuser,
     get_current_active_user,
+    get_hashed_password,
 )
-from .. import schemas, models
 
 router = APIRouter()
 

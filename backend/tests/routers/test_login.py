@@ -1,8 +1,9 @@
 from typing import Dict
 
 import pytest
-from app.config.config import settings
 from httpx import AsyncClient
+
+from app.config.config import settings
 
 
 @pytest.mark.anyio

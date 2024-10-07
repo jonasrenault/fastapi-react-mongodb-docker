@@ -1,6 +1,13 @@
 from datetime import timedelta
 from typing import Any
 
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi_sso.sso.facebook import FacebookSSO
+from fastapi_sso.sso.google import GoogleSSO
+from starlette.requests import Request
+from starlette.responses import RedirectResponse
+
 from app import models, schemas
 from app.auth.auth import (
     authenticate_user,
@@ -9,12 +16,6 @@ from app.auth.auth import (
     get_current_user_from_cookie,
 )
 from app.config.config import settings
-from starlette.requests import Request
-from starlette.responses import RedirectResponse
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import OAuth2PasswordRequestForm
-from fastapi_sso.sso.facebook import FacebookSSO
-from fastapi_sso.sso.google import GoogleSSO
 
 router = APIRouter()
 

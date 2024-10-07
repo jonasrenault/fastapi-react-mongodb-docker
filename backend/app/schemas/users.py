@@ -1,7 +1,8 @@
 from typing import Optional
+from uuid import UUID
+
 from beanie import PydanticObjectId
 from pydantic import BaseModel, EmailStr, Field
-from uuid import UUID
 
 
 class UserBase(BaseModel):
