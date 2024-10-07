@@ -75,9 +75,7 @@ async def update_profile(
     )
     try:
         if update_data["password"]:
-            update_data["hashed_password"] = get_hashed_password(
-                update_data["password"]
-            )
+            update_data["hashed_password"] = get_hashed_password(update_data["password"])
             del update_data["password"]
     except KeyError:
         pass
@@ -118,6 +116,8 @@ async def update_user(
         the current superuser, by default Depends(get_current_active_superuser)
     """
     user = await models.User.find_one({"uuid": userid})
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
     if update.password is not None:
         update.password = get_hashed_password(update.password)
     user = user.model_copy(update=update.model_dump(exclude_unset=True))
@@ -160,5 +160,7 @@ async def delete_user(
     userid: UUID, admin_user: models.User = Depends(get_current_active_superuser)
 ):
     user = await models.User.find_one({"uuid": userid})
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
     await user.delete()
     return user

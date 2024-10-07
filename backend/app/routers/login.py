@@ -25,8 +25,7 @@ google_sso = (
         settings.GOOGLE_CLIENT_SECRET,
         f"{settings.SSO_CALLBACK_HOSTNAME}{settings.API_V1_STR}/login/google/callback",
     )
-    if settings.GOOGLE_CLIENT_ID is not None
-    and settings.GOOGLE_CLIENT_SECRET is not None
+    if settings.GOOGLE_CLIENT_ID is not None and settings.GOOGLE_CLIENT_SECRET is not None
     else None
 )
 
@@ -92,6 +91,8 @@ async def google_login():
     """
     Generate login url and redirect
     """
+    if google_sso is None:
+        raise HTTPException(status_code=400, detail="Google SSO not enabled.")
     return await google_sso.get_login_redirect()
 
 
@@ -100,8 +101,21 @@ async def google_callback(request: Request):
     """
     Process login response from Google and return user info
     """
+    if google_sso is None:
+        raise HTTPException(status_code=400, detail="Google SSO not enabled.")
+    if settings.SSO_LOGIN_CALLBACK_URL is None:
+        raise HTTPException(
+            status_code=400,
+            detail="SSO Login callback url is not set. Google SSO not enabled.",
+        )
+
     # Get user details from Google
     google_user = await google_sso.verify_and_process(request)
+
+    if google_user is None:
+        raise HTTPException(
+            status_code=400, detail="Google SSO verification process failed."
+        )
 
     # Check if user is already created in DB
     user = await models.User.find_one({"email": google_user.email})

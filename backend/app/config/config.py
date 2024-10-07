@@ -23,8 +23,8 @@ class Settings(BaseSettings):
     # database configurations
     MONGO_HOST: str
     MONGO_PORT: int
-    MONGO_USER: str
-    MONGO_PASSWORD: str
+    MONGO_USER: str | None = None
+    MONGO_PASSWORD: str | None = None
     MONGO_DB: str
 
     # 60 minutes * 24 hours * 8 days = 8 days

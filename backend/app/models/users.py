@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Annotated, Optional
 from uuid import UUID, uuid4
 
 from beanie import Document, Indexed
@@ -7,8 +7,8 @@ from pymongo import IndexModel
 
 
 class User(Document):
-    uuid: UUID = Field(default_factory=uuid4)
-    email: Indexed(EmailStr, unique=True)
+    uuid: Annotated[UUID, Field(default_factory=uuid4), Indexed(unique=True)]
+    email: Annotated[EmailStr, Indexed(unique=True)]
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     hashed_password: Optional[str] = None
