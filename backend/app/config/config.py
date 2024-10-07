@@ -44,8 +44,6 @@ class Settings(BaseSettings):
     # SSO ID and Secrets
     GOOGLE_CLIENT_ID: str | None = None
     GOOGLE_CLIENT_SECRET: str | None = None
-    FACEBOOK_CLIENT_ID: str | None = None
-    FACEBOOK_CLIENT_SECRET: str | None = None
     SSO_CALLBACK_HOSTNAME: str | None = None
     SSO_LOGIN_CALLBACK_URL: str | None = None
 

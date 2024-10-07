@@ -3,7 +3,6 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi_sso.sso.facebook import FacebookSSO
 from fastapi_sso.sso.google import GoogleSSO
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
@@ -19,26 +18,15 @@ from app.config.config import settings
 
 router = APIRouter()
 
-google_sso = (
-    GoogleSSO(
+
+def get_google_sso() -> GoogleSSO:
+    if settings.GOOGLE_CLIENT_ID is None or settings.GOOGLE_CLIENT_SECRET is None:
+        raise HTTPException(status_code=400, detail="Google SSO not enabled.")
+    return GoogleSSO(
         settings.GOOGLE_CLIENT_ID,
         settings.GOOGLE_CLIENT_SECRET,
         f"{settings.SSO_CALLBACK_HOSTNAME}{settings.API_V1_STR}/login/google/callback",
     )
-    if settings.GOOGLE_CLIENT_ID is not None and settings.GOOGLE_CLIENT_SECRET is not None
-    else None
-)
-
-facebook_sso = (
-    FacebookSSO(
-        settings.FACEBOOK_CLIENT_ID,
-        settings.FACEBOOK_CLIENT_SECRET,
-        f"{settings.SSO_CALLBACK_HOSTNAME}{settings.API_V1_STR}/login/facebook/callback",
-    )
-    if settings.FACEBOOK_CLIENT_ID is not None
-    and settings.FACEBOOK_CLIENT_SECRET is not None
-    else None
-)
 
 
 @router.post("/access-token", response_model=schemas.Token)
@@ -87,22 +75,21 @@ async def refresh_token(
 
 
 @router.get("/google")
-async def google_login():
+async def google_login(google_sso: GoogleSSO = Depends(get_google_sso)):
     """
     Generate login url and redirect
     """
-    if google_sso is None:
-        raise HTTPException(status_code=400, detail="Google SSO not enabled.")
-    return await google_sso.get_login_redirect()
+    with google_sso:
+        return await google_sso.get_login_redirect()
 
 
 @router.get("/google/callback")
-async def google_callback(request: Request):
+async def google_callback(
+    request: Request, google_sso: GoogleSSO = Depends(get_google_sso)
+):
     """
     Process login response from Google and return user info
     """
-    if google_sso is None:
-        raise HTTPException(status_code=400, detail="Google SSO not enabled.")
     if settings.SSO_LOGIN_CALLBACK_URL is None:
         raise HTTPException(
             status_code=400,
@@ -110,7 +97,8 @@ async def google_callback(request: Request):
         )
 
     # Get user details from Google
-    google_user = await google_sso.verify_and_process(request)
+    with google_sso:
+        google_user = await google_sso.verify_and_process(request)
 
     if google_user is None:
         raise HTTPException(
