@@ -53,7 +53,7 @@ export default function SSOLogin() {
       }
     }
     fetchUserProfile()
-  }, [])
+  })
 
   return <Container component='main' maxWidth='sm' sx={{ mb: 4 }}></Container>
 }

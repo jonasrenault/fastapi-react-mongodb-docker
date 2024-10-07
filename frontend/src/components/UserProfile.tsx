@@ -45,7 +45,7 @@ export default function UserProfile(props: UserProfileProps) {
 
   useEffect(() => {
     reset(userProfile)
-  }, [userProfile])
+  }, [userProfile, reset])
 
   const onSubmit: SubmitHandler<User> = async (data) => {
     let updatedUser: User
