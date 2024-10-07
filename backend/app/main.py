@@ -46,7 +46,8 @@ if settings.BACKEND_CORS_ORIGINS:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[
-            # See https://github.com/pydantic/pydantic/issues/7186 for reason of using rstrip
+            # See https://github.com/pydantic/pydantic/issues/7186
+            # for reason of using rstrip
             str(origin).rstrip("/")
             for origin in settings.BACKEND_CORS_ORIGINS
         ],

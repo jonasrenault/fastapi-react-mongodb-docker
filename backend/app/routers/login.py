@@ -69,7 +69,7 @@ async def test_token(current_user: models.User = Depends(get_current_user)) -> A
 
 
 @router.get("/refresh-token", response_model=schemas.Token)
-async def test_token(
+async def refresh_token(
     current_user: models.User = Depends(get_current_user_from_cookie),
 ) -> Any:
     """

@@ -73,6 +73,9 @@ select = [
 [tool.ruff.lint.isort]
 known-first-party = ["app"]
 
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
 [tool.mypy]
 files = ["app", "tests"]
 disable_error_code = ["import-untyped"]
