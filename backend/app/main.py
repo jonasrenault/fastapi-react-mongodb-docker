@@ -14,13 +14,15 @@ from .routers.api import api_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Setup mongoDB
-    app.client = AsyncIOMotorClient(
+    app.state.client = AsyncIOMotorClient(
         settings.MONGO_HOST,
         settings.MONGO_PORT,
         username=settings.MONGO_USER,
         password=settings.MONGO_PASSWORD,
     )
-    await init_beanie(database=app.client[settings.MONGO_DB], document_models=[User])
+    await init_beanie(
+        database=app.state.client[settings.MONGO_DB], document_models=[User]
+    )
 
     user = await User.find_one({"email": settings.FIRST_SUPERUSER})
     if not user:

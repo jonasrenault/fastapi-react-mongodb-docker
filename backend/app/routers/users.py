@@ -120,10 +120,10 @@ async def update_user(
         raise HTTPException(status_code=404, detail="User not found")
     if update.password is not None:
         update.password = get_hashed_password(update.password)
-    user = user.model_copy(update=update.model_dump(exclude_unset=True))
+    updated_user = user.model_copy(update=update.model_dump(exclude_unset=True))
     try:
-        await user.save()
-        return user
+        await updated_user.save()
+        return updated_user
     except errors.DuplicateKeyError:
         raise HTTPException(
             status_code=400, detail="User with that email already exists."
