@@ -56,7 +56,7 @@ jobs:
       - name: Run black
         uses: psf/black@stable
         with:
-          use_pyproject: true
+          options: "--config ./pyproject.toml"
 
   test-backend:
     name: Run backend unit tests
