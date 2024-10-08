@@ -1,6 +1,6 @@
-import { Typography, Grid, Button, Card, CardContent, CardActions } from '@mui/material'
-import { Link as RouterLink } from 'react-router-dom'
-import { useRouteError, isRouteErrorResponse } from 'react-router-dom'
+import { Button, Card, CardActions, CardContent, Typography } from '@mui/material'
+import Grid from '@mui/material/Grid2'
+import { isRouteErrorResponse, Link as RouterLink, useRouteError } from 'react-router-dom'
 
 interface Error {
   status: number
@@ -26,7 +26,7 @@ export default function ErrorPage() {
         justifyContent='center'
         style={{ minHeight: '100vh' }}
       >
-        <Grid item xs={3}>
+        <Grid size={3}>
           <Card sx={{ minWidth: 275, margin: 'auto' }}>
             <CardContent>
               <Typography variant='h1' component='div'>

@@ -1,24 +1,24 @@
-import { useState } from 'react'
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import {
-  Box,
   Avatar,
-  Typography,
+  Box,
   Button,
-  TextField,
+  Collapse,
   Link,
-  Grid,
   SvgIcon,
   SvgIconProps,
-  Collapse,
+  TextField,
+  Typography,
 } from '@mui/material'
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
-import { Link as RouterLink, useNavigate } from 'react-router-dom'
-import { useForm, SubmitHandler } from 'react-hook-form'
-import { useSnackBar } from '../contexts/snackbar'
-import { useAuth } from '../contexts/auth'
-import authService from '../services/auth.service'
-import { User } from '../models/user'
+import Grid from '@mui/material/Grid2'
 import { AxiosError } from 'axios'
+import { useState } from 'react'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/auth'
+import { useSnackBar } from '../contexts/snackbar'
+import { User } from '../models/user'
+import authService from '../services/auth.service'
 
 export function GoogleIcon(props: SvgIconProps) {
   return (
@@ -168,7 +168,7 @@ export default function LoginForm() {
             Sign In
           </Button>
           <Grid container justifyContent='flex-end'>
-            <Grid item>
+            <Grid>
               <Link component={RouterLink} to='/register' variant='body2'>
                 {"Don't have an account yet? Sign Up"}
               </Link>
