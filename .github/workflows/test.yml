@@ -55,6 +55,8 @@ jobs:
 
       - name: Run black
         uses: psf/black@stable
+        with:
+          use_pyproject: true
 
   test-backend:
     name: Run backend unit tests
