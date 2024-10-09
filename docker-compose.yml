@@ -79,19 +79,25 @@ services:
 
   frontend:
     image: '${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}'
+    env_file:
+      - .env
+    ports:
+      - "5173:5173"
     build:
       context: ./frontend
       dockerfile: Dockerfile.development
       args:
         FRONTEND_ENV: dev
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app # Synchronise docker container with local change
-      - /app/node_modules # Avoid re-copying local node_modules. Cache in volume. See https://stackoverflow.com/questions/29181032/add-a-volume-to-docker-but-exclude-a-sub-folder
-    env_file:
-      - .env
     command: npm run dev -- --host
+    develop:
+      watch:
+        - path: ./frontend
+          action: sync
+          target: /app
+          ignore:
+            - ./frontend/node_modules
+        - path: ./frontend/package.json
+          action: rebuild
     labels:
       - traefik.enable=true
       - traefik.http.routers.${STACK_NAME?Variable not set}-frontend-http.rule=PathPrefix(`/`)
