@@ -96,6 +96,7 @@ services:
           target: /app
           ignore:
             - ./frontend/node_modules
+            - node_modules
         - path: ./frontend/package.json
           action: rebuild
     labels:
