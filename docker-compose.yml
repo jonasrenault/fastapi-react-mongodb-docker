@@ -52,8 +52,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - SERVER_NAME=${DOMAIN?Variable not set}
-      - SERVER_HOST=http://${DOMAIN?Variable not set}
+      - MONGO_HOST=db
     build:
       context: ./backend
       dockerfile: Dockerfile

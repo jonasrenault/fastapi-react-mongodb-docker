@@ -67,8 +67,7 @@ services:
     env_file:
       - .env
     environment:
-      - SERVER_NAME=${DOMAIN?Variable not set}
-      - SERVER_HOST=https://${DOMAIN?Variable not set}
+      - MONGO_HOST=db
     volumes:
       - app-static-data:/app/static
     build:
