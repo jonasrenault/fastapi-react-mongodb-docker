@@ -14,7 +14,7 @@ packages = [
 python = "^3.12"
 requests = "^2.32.3"
 pymongo = "^4.9.2"
-fastapi = "^0.115.0"
+fastapi = {extras = ["standard"], version = "^0.115.0"}
 uvicorn = "^0.31.0"
 python-multipart = "^0.0.12"
 motor = "^3.6.0"
