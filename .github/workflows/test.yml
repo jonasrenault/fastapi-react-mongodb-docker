@@ -13,9 +13,9 @@ on:
       - main
 
 env: # environment variables (available in any part of the action)
-  NODE_VERSION: 20
-  PYTHON_VERSION: 3.11
-  MONGODB_VERSION: 6.0
+  NODE_VERSION: 21
+  PYTHON_VERSION: 3.12
+  MONGODB_VERSION: 8.0
 
 jobs:
   run-js-linters:
@@ -33,7 +33,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install Node.js dependencies
@@ -55,6 +55,8 @@ jobs:
 
       - name: Run black
         uses: psf/black@stable
+        with:
+          options: "--config backend/pyproject.toml"
 
   test-backend:
     name: Run backend unit tests
@@ -75,7 +77,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'poetry'
+          cache: "poetry"
 
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0

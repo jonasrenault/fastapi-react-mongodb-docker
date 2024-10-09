@@ -8,19 +8,19 @@ import {
   DialogContent,
   DialogContentText,
   FormControlLabel,
-  Grid,
   IconButton,
   TextField,
 } from '@mui/material'
+import Grid from '@mui/material/Grid2'
+import { AxiosError } from 'axios'
 import { useEffect, useState } from 'react'
-import { useForm, SubmitHandler } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/auth'
 import { useSnackBar } from '../contexts/snackbar'
+import { User } from '../models/user'
 import userService from '../services/user.service'
 import { GoogleIcon } from './LoginForm'
-import { User } from '../models/user'
-import { AxiosError } from 'axios'
 
 interface UserProfileProps {
   userProfile: User
@@ -45,7 +45,7 @@ export default function UserProfile(props: UserProfileProps) {
 
   useEffect(() => {
     reset(userProfile)
-  }, [userProfile])
+  }, [userProfile, reset])
 
   const onSubmit: SubmitHandler<User> = async (data) => {
     let updatedUser: User
@@ -118,7 +118,7 @@ export default function UserProfile(props: UserProfileProps) {
           data-testid='user-profile-form'
         >
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 autoComplete='given-name'
                 fullWidth
@@ -128,7 +128,7 @@ export default function UserProfile(props: UserProfileProps) {
                 autoFocus
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 fullWidth
                 id='last_name'
@@ -137,7 +137,7 @@ export default function UserProfile(props: UserProfileProps) {
                 {...register('last_name')}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <TextField
                 fullWidth
                 id='email'
@@ -156,7 +156,7 @@ export default function UserProfile(props: UserProfileProps) {
             </Grid>
 
             {userProfile.provider && (
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField
                   fullWidth
                   label='Connected with'
@@ -172,7 +172,7 @@ export default function UserProfile(props: UserProfileProps) {
             )}
 
             {!userProfile.provider && (
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField
                   fullWidth
                   label='Password'
@@ -186,7 +186,7 @@ export default function UserProfile(props: UserProfileProps) {
 
             {currentUser?.is_superuser && (
               <>
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -199,7 +199,7 @@ export default function UserProfile(props: UserProfileProps) {
                     disabled={currentUser.uuid === userProfile.uuid}
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <FormControlLabel
                     control={
                       <Checkbox

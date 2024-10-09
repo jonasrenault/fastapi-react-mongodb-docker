@@ -26,7 +26,7 @@ const AuthProvider: FC<AuthContextProviderProps> = ({ children }) => {
       try {
         const user = await userService.getProfile()
         setUser(user)
-      } catch (error) {
+      } catch {
         setUser(undefined)
       }
     }

@@ -1,17 +1,17 @@
-from typing import List, Optional, Any
+from typing import Any, List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Body, Depends
-from pymongo import errors
-from pydantic.networks import EmailStr
 from beanie.exceptions import RevisionIdWasChanged
+from fastapi import APIRouter, Body, Depends, HTTPException
+from pydantic.networks import EmailStr
+from pymongo import errors
 
+from .. import models, schemas
 from ..auth.auth import (
-    get_hashed_password,
     get_current_active_superuser,
     get_current_active_user,
+    get_hashed_password,
 )
-from .. import schemas, models
 
 router = APIRouter()
 
@@ -75,9 +75,7 @@ async def update_profile(
     )
     try:
         if update_data["password"]:
-            update_data["hashed_password"] = get_hashed_password(
-                update_data["password"]
-            )
+            update_data["hashed_password"] = get_hashed_password(update_data["password"])
             del update_data["password"]
     except KeyError:
         pass
@@ -118,12 +116,14 @@ async def update_user(
         the current superuser, by default Depends(get_current_active_superuser)
     """
     user = await models.User.find_one({"uuid": userid})
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
     if update.password is not None:
         update.password = get_hashed_password(update.password)
-    user = user.model_copy(update=update.model_dump(exclude_unset=True))
+    updated_user = user.model_copy(update=update.model_dump(exclude_unset=True))
     try:
-        await user.save()
-        return user
+        await updated_user.save()
+        return updated_user
     except errors.DuplicateKeyError:
         raise HTTPException(
             status_code=400, detail="User with that email already exists."
@@ -160,5 +160,7 @@ async def delete_user(
     userid: UUID, admin_user: models.User = Depends(get_current_active_superuser)
 ):
     user = await models.User.find_one({"uuid": userid})
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
     await user.delete()
     return user

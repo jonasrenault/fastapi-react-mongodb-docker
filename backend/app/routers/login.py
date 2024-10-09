@@ -1,6 +1,12 @@
 from datetime import timedelta
 from typing import Any
 
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi_sso.sso.google import GoogleSSO
+from starlette.requests import Request
+from starlette.responses import RedirectResponse
+
 from app import models, schemas
 from app.auth.auth import (
     authenticate_user,
@@ -9,36 +15,18 @@ from app.auth.auth import (
     get_current_user_from_cookie,
 )
 from app.config.config import settings
-from starlette.requests import Request
-from starlette.responses import RedirectResponse
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import OAuth2PasswordRequestForm
-from fastapi_sso.sso.facebook import FacebookSSO
-from fastapi_sso.sso.google import GoogleSSO
 
 router = APIRouter()
 
-google_sso = (
-    GoogleSSO(
+
+def get_google_sso() -> GoogleSSO:
+    if settings.GOOGLE_CLIENT_ID is None or settings.GOOGLE_CLIENT_SECRET is None:
+        raise HTTPException(status_code=400, detail="Google SSO not enabled.")
+    return GoogleSSO(
         settings.GOOGLE_CLIENT_ID,
         settings.GOOGLE_CLIENT_SECRET,
         f"{settings.SSO_CALLBACK_HOSTNAME}{settings.API_V1_STR}/login/google/callback",
     )
-    if settings.GOOGLE_CLIENT_ID is not None
-    and settings.GOOGLE_CLIENT_SECRET is not None
-    else None
-)
-
-facebook_sso = (
-    FacebookSSO(
-        settings.FACEBOOK_CLIENT_ID,
-        settings.FACEBOOK_CLIENT_SECRET,
-        f"{settings.SSO_CALLBACK_HOSTNAME}{settings.API_V1_STR}/login/facebook/callback",
-    )
-    if settings.FACEBOOK_CLIENT_ID is not None
-    and settings.FACEBOOK_CLIENT_SECRET is not None
-    else None
-)
 
 
 @router.post("/access-token", response_model=schemas.Token)
@@ -68,7 +56,7 @@ async def test_token(current_user: models.User = Depends(get_current_user)) -> A
 
 
 @router.get("/refresh-token", response_model=schemas.Token)
-async def test_token(
+async def refresh_token(
     current_user: models.User = Depends(get_current_user_from_cookie),
 ) -> Any:
     """
@@ -87,20 +75,35 @@ async def test_token(
 
 
 @router.get("/google")
-async def google_login():
+async def google_login(google_sso: GoogleSSO = Depends(get_google_sso)):
     """
     Generate login url and redirect
     """
-    return await google_sso.get_login_redirect()
+    with google_sso:
+        return await google_sso.get_login_redirect()
 
 
 @router.get("/google/callback")
-async def google_callback(request: Request):
+async def google_callback(
+    request: Request, google_sso: GoogleSSO = Depends(get_google_sso)
+):
     """
     Process login response from Google and return user info
     """
+    if settings.SSO_LOGIN_CALLBACK_URL is None:
+        raise HTTPException(
+            status_code=400,
+            detail="SSO Login callback url is not set. Google SSO not enabled.",
+        )
+
     # Get user details from Google
-    google_user = await google_sso.verify_and_process(request)
+    with google_sso:
+        google_user = await google_sso.verify_and_process(request)
+
+    if google_user is None:
+        raise HTTPException(
+            status_code=400, detail="Google SSO verification process failed."
+        )
 
     # Check if user is already created in DB
     user = await models.User.find_one({"email": google_user.email})

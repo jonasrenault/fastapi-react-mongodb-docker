@@ -8,10 +8,10 @@ import {
   CardMedia,
   Container,
   Divider,
-  Grid,
   Link,
   Typography,
 } from '@mui/material'
+import Grid from '@mui/material/Grid2'
 import { useLoaderData } from 'react-router-dom'
 
 type Feature = {
@@ -204,7 +204,7 @@ export default function Home() {
         </Box>
         <Grid container spacing={4}>
           {features.map((feature) => (
-            <Grid item key={feature.title} xs={12} sm={6} md={4}>
+            <Grid key={feature.title} size={{ xs: 12, sm: 6, md: 4 }}>
               <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <CardMedia
                   component='img'

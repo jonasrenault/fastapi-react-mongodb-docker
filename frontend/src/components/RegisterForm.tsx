@@ -1,13 +1,14 @@
-import { useState } from 'react'
-import { Link as RouterLink, useNavigate } from 'react-router-dom'
-import { Avatar, Button, TextField, Link, Grid, Box, Typography, Collapse } from '@mui/material'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
-import { useForm, SubmitHandler } from 'react-hook-form'
-import authService from '../services/auth.service'
+import { Avatar, Box, Button, Collapse, Link, TextField, Typography } from '@mui/material'
+import Grid from '@mui/material/Grid2'
+import { AxiosError } from 'axios'
+import { useState } from 'react'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import { useSnackBar } from '../contexts/snackbar'
 import { User } from '../models/user'
+import authService from '../services/auth.service'
 import { GoogleIcon } from './LoginForm'
-import { AxiosError } from 'axios'
 
 const SHOW_EMAIL_REGISTER_FORM: string = import.meta.env.VITE_PWD_SIGNUP_ENABLED
 
@@ -88,7 +89,7 @@ export default function RegisterForm() {
         <Collapse in={expanded} timeout='auto'>
           <Box component='form' onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }} noValidate>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                   autoComplete='given-name'
                   fullWidth
@@ -98,7 +99,7 @@ export default function RegisterForm() {
                   {...register('first_name')}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                   fullWidth
                   label='Last Name'
@@ -106,7 +107,7 @@ export default function RegisterForm() {
                   {...register('last_name')}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField
                   required
                   fullWidth
@@ -118,7 +119,7 @@ export default function RegisterForm() {
                   {...register('email', { required: true })}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField
                   required
                   fullWidth
@@ -136,7 +137,7 @@ export default function RegisterForm() {
               Sign Up
             </Button>
             <Grid container justifyContent='flex-end'>
-              <Grid item>
+              <Grid>
                 <Link component={RouterLink} to='/login' variant='body2'>
                   Already have an account? Sign in
                 </Link>

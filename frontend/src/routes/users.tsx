@@ -1,28 +1,28 @@
-import { useState } from 'react'
-import { useLoaderData, redirect } from 'react-router-dom'
+import DeleteIcon from '@mui/icons-material/Delete'
 import {
-  Grid,
-  Container,
-  Paper,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemAvatar,
-  ListItemText,
-  IconButton,
   Avatar,
+  Button,
+  Container,
   Dialog,
+  DialogActions,
   DialogContent,
   DialogContentText,
-  DialogActions,
-  Button,
+  IconButton,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemText,
+  Paper,
 } from '@mui/material'
-import DeleteIcon from '@mui/icons-material/Delete'
-import { useSnackBar } from '../contexts/snackbar'
+import Grid from '@mui/material/Grid2'
+import { useState } from 'react'
+import { redirect, useLoaderData } from 'react-router-dom'
 import UserProfile from '../components/UserProfile'
-import userService from '../services/user.service'
 import { useAuth } from '../contexts/auth'
+import { useSnackBar } from '../contexts/snackbar'
 import { User } from '../models/user'
+import userService from '../services/user.service'
 
 export async function loader() {
   try {
@@ -73,7 +73,7 @@ export default function Users() {
   return (
     <Container maxWidth='lg' sx={{ mt: 4, mb: 4 }}>
       <Grid container spacing={2} justifyContent='center'>
-        <Grid item xs={12} md={5}>
+        <Grid size={{ xs: 12, md: 5 }}>
           <Paper>
             <List
               sx={{ maxHeight: 450, overflow: 'auto', '::-webkit-scrollbar': { display: 'none' } }}
@@ -116,7 +116,7 @@ export default function Users() {
             </List>
           </Paper>
         </Grid>
-        <Grid item xs={12} md={7} lg={5}>
+        <Grid size={{ xs: 12, md: 7, lg: 5 }}>
           {selectedUser && (
             <Paper
               sx={{

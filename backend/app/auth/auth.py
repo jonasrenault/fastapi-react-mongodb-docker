@@ -1,8 +1,9 @@
-from datetime import datetime, timedelta
-from typing import Any, Dict, Optional, Union
+from datetime import datetime, timedelta, timezone
+from typing import Any
 from uuid import UUID
 
 from fastapi import Depends, HTTPException, Request, status
+from fastapi.openapi.models import OAuthFlowPassword
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi.security import OAuth2, OAuth2PasswordBearer
 from fastapi.security.utils import get_authorization_scheme_param
@@ -25,14 +26,17 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
     def __init__(
         self,
         tokenUrl: str,
-        scheme_name: Optional[str] = None,
-        scopes: Optional[Dict[str, str]] = None,
-        description: Optional[str] = None,
+        scheme_name: str | None = None,
+        scopes: dict[str, str] | None = None,
+        description: str | None = None,
         auto_error: bool = True,
     ):
         if not scopes:
             scopes = {}
-        flows = OAuthFlowsModel(password={"tokenUrl": tokenUrl, "scopes": scopes})
+
+        flows = OAuthFlowsModel(
+            password=OAuthFlowPassword(tokenUrl=tokenUrl, scopes=scopes)
+        )
         super().__init__(
             flows=flows,
             scheme_name=scheme_name,
@@ -40,7 +44,7 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
             auto_error=auto_error,
         )
 
-    async def __call__(self, request: Request) -> Optional[str]:
+    async def __call__(self, request: Request) -> str | None:
         authorization = request.cookies.get("Authorization")
         scheme, param = get_authorization_scheme_param(authorization)
         if not authorization or scheme.lower() != "bearer":
@@ -55,9 +59,7 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
         return param
 
 
-oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/login/access-token"
-)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/login/access-token")
 oauth2_scheme_with_cookies = OAuth2PasswordBearerWithCookie(
     tokenUrl=f"{settings.API_V1_STR}/login/access-token"
 )
@@ -82,13 +84,11 @@ async def authenticate_user(email: str, password: str):
     return user
 
 
-def create_access_token(
-    subject: Union[str, Any], expires_delta: timedelta | None = None
-):
+def create_access_token(subject: str | Any, expires_delta: timedelta | None = None):
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode = {"exp": expire, "sub": str(subject)}
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt

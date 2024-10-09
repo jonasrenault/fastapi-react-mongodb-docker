@@ -1,10 +1,11 @@
-import pytest
 from typing import Dict
 
+import pytest
 from httpx import AsyncClient
 
 from app.config.config import settings
 from app.models import User
+
 from ..utils import (
     create_test_user,
     generate_user_auth_headers,
@@ -31,9 +32,7 @@ async def test_get_profile_superuser(
 async def test_get_profile_normal_user(client: AsyncClient) -> None:
     user = await create_test_user()
     token_headers = await generate_user_auth_headers(client, user)
-    response = await client.get(
-        f"{settings.API_V1_STR}/users/me", headers=token_headers
-    )
+    response = await client.get(f"{settings.API_V1_STR}/users/me", headers=token_headers)
 
     profile = response.json()
     assert profile
@@ -96,6 +95,7 @@ async def test_update_profile(client: AsyncClient) -> None:
     assert r.status_code == 200
 
     updated_user = await User.get(user.id)
+    assert updated_user is not None
     assert updated_user.email == data["email"]
 
 
@@ -129,5 +129,6 @@ async def test_update_profile_cannot_set_superuser(client: AsyncClient) -> None:
     assert r.status_code == 200
 
     updated_user = await User.get(user.id)
-    assert updated_user.is_superuser == False
-    assert updated_user.is_active == True
+    assert updated_user is not None
+    assert updated_user.is_superuser is False
+    assert updated_user.is_active is True

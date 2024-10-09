@@ -1,10 +1,8 @@
-version: '3.8'
-
 services:
   proxy:
-    image: traefik:v2.9
+    image: traefik:v3.2
     networks:
-      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - traefik-public
       - default
     ports:
       - 443:443
@@ -35,7 +33,7 @@ services:
       # Enable Traefik for this service, to make it available in the public network
       traefik.enable: true
       # Use the traefik-public network (declared below)
-      traefik.docker.network: ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      traefik.docker.network: traefik-public
       # Global redirection: http to https
       traefik.http.routers.http-catchall.rule: HostRegexp(`{host:(www\.)?${DOMAIN?Variable not set}}`)
       traefik.http.routers.http-catchall.entrypoints: web
@@ -53,7 +51,7 @@ services:
       traefik.http.middlewares.wwwtohttps.redirectregex.permanent: true
 
       # Traefik dashboard
-      # Uncomment to enable access to dashboard, but it will conflict with /api bath for backend.
+      # Uncomment to enable access to dashboard, but it will conflict with /api path for backend.
       # traefik.http.routers.dashboard.rule: Host(`${DOMAIN?Variable not set}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
       # traefik.http.routers.dashboard.entrypoints: websecure
       # traefik.http.routers.dashboard.tls: true
@@ -69,15 +67,12 @@ services:
     env_file:
       - .env
     environment:
-      - SERVER_NAME=${DOMAIN?Variable not set}
-      - SERVER_HOST=https://${DOMAIN?Variable not set}
+      - MONGO_HOST=db
     volumes:
       - app-static-data:/app/static
     build:
       context: ./backend
       dockerfile: Dockerfile
-      args:
-        INSTALL_DEV: ${INSTALL_DEV-false}
     labels:
       - traefik.enable=true
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
@@ -123,4 +118,4 @@ volumes:
 networks:
   traefik-public:
     # Allow setting it to false for testing
-    external: ${TRAEFIK_PUBLIC_NETWORK_IS_EXTERNAL-true}
+    external: traefik-public
