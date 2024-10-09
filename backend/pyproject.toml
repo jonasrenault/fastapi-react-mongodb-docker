@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "farm-docker"
-version = "1.1.0"
+version = "1.2.0"
 description = "Backend API for farm-docker"
 authors = ["Jonas Renault <jonasrenault@gmail.com>"]
 readme = "README.md"
