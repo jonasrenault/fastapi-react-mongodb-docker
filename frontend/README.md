@@ -4,7 +4,7 @@ This directory contains the frontend application. It is built with [React](https
 
 ## Requirements
 
-* [Node.js](https://nodejs.org/en/) for javascript execution and `npm` for package management.
+- [Node.js](https://nodejs.org/en/) for javascript execution and `npm` for package management.
 
 ## Install
 
