@@ -1,4 +1,3 @@
-from typing import Optional
 from uuid import UUID
 
 from beanie import PydanticObjectId
@@ -10,9 +9,9 @@ class UserBase(BaseModel):
     Shared User properties. Visible by anyone.
     """
 
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    picture: Optional[str] = None
+    first_name: str | None = None
+    last_name: str | None = None
+    picture: str | None = None
 
 
 class PrivateUserBase(UserBase):
@@ -20,10 +19,10 @@ class PrivateUserBase(UserBase):
     Shared User properties. Visible only by admins and self.
     """
 
-    email: Optional[EmailStr] = None
-    is_active: Optional[bool] = True
-    is_superuser: bool = False
-    provider: Optional[str] = None
+    email: EmailStr | None = None
+    is_active: bool | None = None
+    is_superuser: bool | None = None
+    provider: str | None = None
 
 
 class UserUpdate(UserBase):
@@ -31,10 +30,10 @@ class UserUpdate(UserBase):
     User properties to receive via API on update.
     """
 
-    password: Optional[str] = None
-    email: Optional[EmailStr] = None
-    is_active: Optional[bool] = True
-    is_superuser: bool = False
+    password: str | None = None
+    email: EmailStr | None = None
+    is_active: bool | None = None
+    is_superuser: bool | None = None
 
 
 class User(PrivateUserBase):

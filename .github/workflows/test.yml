@@ -80,7 +80,7 @@ jobs:
           cache: "poetry"
 
       - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.8.0
+        uses: supercharge/mongodb-github-action@1.11.0
         with:
           mongodb-version: ${{ env.MONGODB_VERSION }}
 
