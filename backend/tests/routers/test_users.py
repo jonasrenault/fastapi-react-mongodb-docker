@@ -1,5 +1,3 @@
-from typing import Dict
-
 import pytest
 from httpx import AsyncClient
 
@@ -16,7 +14,7 @@ from ..utils import (
 
 @pytest.mark.anyio
 async def test_get_profile_superuser(
-    client: AsyncClient, superuser_token_headers: Dict[str, str]
+    client: AsyncClient, superuser_token_headers: dict[str, str]
 ) -> None:
     r = await client.get(
         f"{settings.API_V1_STR}/users/me", headers=superuser_token_headers

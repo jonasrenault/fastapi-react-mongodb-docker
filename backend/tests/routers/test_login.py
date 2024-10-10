@@ -1,5 +1,3 @@
-from typing import Dict
-
 import pytest
 from httpx import AsyncClient
 
@@ -21,7 +19,7 @@ async def test_get_access_token(client: AsyncClient) -> None:
 
 @pytest.mark.anyio
 async def test_use_access_token(
-    client: AsyncClient, superuser_token_headers: Dict[str, str]
+    client: AsyncClient, superuser_token_headers: dict[str, str]
 ) -> None:
     r = await client.get(
         f"{settings.API_V1_STR}/login/test-token",

@@ -1,6 +1,5 @@
 import random
 import string
-from typing import Dict
 
 from httpx import AsyncClient
 
@@ -11,7 +10,7 @@ from app.models import User
 
 async def get_user_auth_headers(
     client: AsyncClient, email: str, password: str
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """
     Given a user's email and password, send a request to login the user and return the
     authorization headers.
@@ -24,7 +23,7 @@ async def get_user_auth_headers(
     return headers
 
 
-async def generate_user_auth_headers(client: AsyncClient, user: User) -> Dict[str, str]:
+async def generate_user_auth_headers(client: AsyncClient, user: User) -> dict[str, str]:
     """
     Given a user in DB, generate a token and return the authorization headers.
     """

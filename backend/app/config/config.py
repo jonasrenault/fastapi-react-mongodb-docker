@@ -1,5 +1,5 @@
 import secrets
-from typing import List, Literal
+from typing import Literal
 
 from pydantic import AnyHttpUrl, EmailStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     # 60 minutes * 24 hours * 8 days = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     # JSON-formatted list of origins
-    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
+    BACKEND_CORS_ORIGINS: list[AnyHttpUrl] = []
     PROJECT_NAME: str
     FIRST_SUPERUSER: EmailStr
     FIRST_SUPERUSER_PASSWORD: str

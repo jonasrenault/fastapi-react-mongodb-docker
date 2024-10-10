@@ -45,6 +45,4 @@ to run the unit tests for the backend app.
 
 The project uses Pydantic's settings management through FastAPI. Documentation on how the settings work is availabe [here](https://fastapi.tiangolo.com/advanced/settings/).
 
-The configuration file is located in [config/config.py](app/config/config.py). This file defines the setting properties, there types, and default values. The `Config` class specifies where these properties are from, i.e. the [.env.dev](.env.dev) file. Modify the values in the [.env.dev](.env.dev) file to change the configuration.
-
-Note that when the backend application is run with Docker, the values in the [.env.dev](.env.dev) are overriden with environment variables set in the Docker configuration.
+The configuration file is located in [config/config.py](app/config/config.py). This file defines the setting properties, their types, and default values. The `model_config` attribute specifies where these properties are from, i.e. the [.env](../.env) file at the root of the project. Modify the values in the [.env](../.env) file to change the configuration.

@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any
 from uuid import UUID
 
 from beanie.exceptions import RevisionIdWasChanged
@@ -42,10 +42,10 @@ async def register_user(
         )
 
 
-@router.get("", response_model=List[schemas.User])
+@router.get("", response_model=list[schemas.User])
 async def get_users(
-    limit: Optional[int] = 10,
-    offset: Optional[int] = 0,
+    limit: int | None = 10,
+    offset: int | None = 0,
     admin_user: models.User = Depends(get_current_active_superuser),
 ):
     users = await models.User.find_all().skip(offset).limit(limit).to_list()
