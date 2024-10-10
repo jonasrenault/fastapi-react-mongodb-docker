@@ -67,7 +67,7 @@ async def test_create_user_existing_username(client: AsyncClient) -> None:
 
 @pytest.mark.anyio
 async def test_get_existing_user(
-    client: AsyncClient, superuser_token_headers: dict
+    client: AsyncClient, superuser_token_headers: dict[str, str]
 ) -> None:
     user = await create_test_user()
     r = await client.get(
@@ -83,6 +83,7 @@ async def test_get_existing_user(
 async def test_update_profile(client: AsyncClient) -> None:
     # create user
     user = await create_test_user()
+    user_hashed_password = user.hashed_password
     token_headers = await generate_user_auth_headers(client, user)
 
     # update user email and pw
@@ -95,6 +96,7 @@ async def test_update_profile(client: AsyncClient) -> None:
     updated_user = await User.get(user.id)
     assert updated_user is not None
     assert updated_user.email == data["email"]
+    assert updated_user.hashed_password != user_hashed_password
 
 
 @pytest.mark.anyio
@@ -130,3 +132,52 @@ async def test_update_profile_cannot_set_superuser(client: AsyncClient) -> None:
     assert updated_user is not None
     assert updated_user.is_superuser is False
     assert updated_user.is_active is True
+
+
+@pytest.mark.anyio
+async def test_update_user(
+    client: AsyncClient, superuser_token_headers: dict[str, str]
+) -> None:
+    # create user
+    user = await create_test_user()
+    user_hashed_password = user.hashed_password
+
+    # update user email and pw
+    data = {
+        "email": random_email(),
+        "password": random_lower_string(),
+        "is_superuser": True,
+        "is_active": False,
+    }
+    r = await client.patch(
+        f"{settings.API_V1_STR}/users/{user.uuid}",
+        json=data,
+        headers=superuser_token_headers,
+    )
+    assert r.status_code == 200
+
+    updated_user = await User.get(user.id)
+    assert updated_user is not None
+    assert updated_user.email == data["email"]
+    assert updated_user.hashed_password != user_hashed_password
+    assert updated_user.is_superuser is True
+    assert updated_user.is_active is False
+
+
+@pytest.mark.anyio
+async def test_update_user_existing_email(
+    client: AsyncClient, superuser_token_headers: dict[str, str]
+) -> None:
+    # create user
+    user = await create_test_user()
+
+    # update user email to already existing email
+    data = {"email": settings.FIRST_SUPERUSER}
+    r = await client.patch(
+        f"{settings.API_V1_STR}/users/{user.uuid}",
+        json=data,
+        headers=superuser_token_headers,
+    )
+    response = r.json()
+    assert r.status_code == 400
+    assert response["detail"] == "User with that email already exists."

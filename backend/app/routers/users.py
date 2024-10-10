@@ -118,13 +118,18 @@ async def update_user(
     user = await models.User.find_one({"uuid": userid})
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    if update.password is not None:
-        update.password = get_hashed_password(update.password)
-    updated_user = user.model_copy(update=update.model_dump(exclude_unset=True))
+    update_data = update.model_dump(exclude_unset=True)
+    try:
+        if update_data["password"]:
+            update_data["hashed_password"] = get_hashed_password(update_data["password"])
+            del update_data["password"]
+    except KeyError:
+        pass
+    updated_user = user.model_copy(update=update_data)
     try:
         await updated_user.save()
         return updated_user
-    except errors.DuplicateKeyError:
+    except (errors.DuplicateKeyError, RevisionIdWasChanged):
         raise HTTPException(
             status_code=400, detail="User with that email already exists."
         )
