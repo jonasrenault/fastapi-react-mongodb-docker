@@ -3,7 +3,7 @@
 ![Tests](https://github.com/jonasrenault/fastapi-react-mongodb-docker/actions/workflows/test.yml/badge.svg)
 ![Build](https://github.com/jonasrenault/fastapi-react-mongodb-docker/actions/workflows/build.yml/badge.svg)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
-![python_version](https://img.shields.io/badge/Python-%3E=3.10-blue)
+![python_version](https://img.shields.io/badge/Python-%3E=3.12-blue)
 
 This is a template application for a FARM stack. FARM stands for FastAPI, React, MongoDB.
 
