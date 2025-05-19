@@ -7,7 +7,7 @@ packages = ["app"]
 
 [project]
 name = "farm-docker"
-version = "1.2.0"
+version = "1.3.0"
 description = "Backend API for farm-docker"
 readme = "README.md"
 license = { text = "MIT" }
