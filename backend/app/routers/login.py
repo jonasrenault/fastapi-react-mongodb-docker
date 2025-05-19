@@ -35,7 +35,7 @@ async def login_access_token(form_data: OAuth2PasswordRequestForm = Depends()) -
     OAuth2 compatible token login, get an access token for future requests
     """
     user = await authenticate_user(form_data.username, form_data.password)
-    if not user:
+    if user is None:
         raise HTTPException(status_code=400, detail="Incorrect email or password")
     elif not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
@@ -79,8 +79,7 @@ async def google_login(google_sso: GoogleSSO = Depends(get_google_sso)):
     """
     Generate login url and redirect
     """
-    with google_sso:
-        return await google_sso.get_login_redirect()
+    return await google_sso.get_login_redirect()
 
 
 @router.get("/google/callback")
@@ -97,8 +96,7 @@ async def google_callback(
         )
 
     # Get user details from Google
-    with google_sso:
-        google_user = await google_sso.verify_and_process(request)
+    google_user = await google_sso.verify_and_process(request)
 
     if google_user is None:
         raise HTTPException(

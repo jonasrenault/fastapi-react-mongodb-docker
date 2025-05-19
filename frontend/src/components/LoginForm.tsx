@@ -10,11 +10,11 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import Grid from '@mui/material/Grid2'
+import Grid from '@mui/material/Grid'
 import { AxiosError } from 'axios'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { Link as RouterLink, useNavigate } from 'react-router'
 import { useAuth } from '../contexts/auth'
 import { useSnackBar } from '../contexts/snackbar'
 import { User } from '../models/user'

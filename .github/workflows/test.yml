@@ -13,7 +13,7 @@ on:
       - main
 
 env: # environment variables (available in any part of the action)
-  NODE_VERSION: 21
+  NODE_VERSION: 22
   PYTHON_VERSION: 3.12
   MONGODB_VERSION: 8.0
 
@@ -53,10 +53,19 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
-      - name: Run black
-        uses: psf/black@stable
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          options: "--config backend/pyproject.toml"
+          enable-cache: true
+
+      - name: Run black
+        run: uv run --group dev black --check --config ./pyproject.toml .
+
+      - name: Run mypy
+        run: uv run --group dev mypy --config-file=pyproject.toml
+
+      - name: Run ruff
+        run: uv run --group dev ruff check
 
   test-backend:
     name: Run backend unit tests
@@ -70,28 +79,18 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v4
 
-      - name: Install poetry
-        run: pipx install poetry
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: "poetry"
+          enable-cache: true
 
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.11.0
         with:
           mongodb-version: ${{ env.MONGODB_VERSION }}
 
-      # Install dependencies. `--no-root` means "install all dependencies but not the project
-      # itself", which is what you want to avoid caching _your_ code. The `if` statement
-      # ensures this only runs on a cache miss.
-      - name: Install dependencies
-        run: poetry install --no-interaction --no-root --with dev
-
       - name: Test with pytest
-        run: poetry run pytest --cov=app tests --cov-report html
+        run: uv run --group dev pytest --cov=app tests --cov-report html
 
       # upload-artifact action does not take into account working-directory default
       # see https://github.com/actions/upload-artifact/issues/232

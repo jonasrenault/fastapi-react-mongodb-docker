@@ -1,5 +1,6 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter } from 'react-router'
 import ErrorPage from './error-page'
+import { HydrateFallback } from './fallback'
 import Home, { loader as homeLoader } from './routes/home'
 import Login from './routes/login'
 import { Profile } from './routes/profile'
@@ -11,30 +12,31 @@ import Users, { loader as usersLoader } from './routes/users'
 export const routes = [
   {
     path: '/',
-    element: <Root />,
+    Component: Root,
     errorElement: <ErrorPage />,
     children: [
-      { index: true, element: <Home />, loader: homeLoader },
+      { index: true, Component: Home, HydrateFallback: HydrateFallback, loader: homeLoader },
       {
         path: 'sso-login-callback',
-        element: <SSOLogin />,
+        Component: SSOLogin,
         loader: ssoLoader,
       },
       {
         path: 'profile',
-        element: <Profile />,
+        Component: Profile,
       },
       {
         path: 'login',
-        element: <Login />,
+        Component: Login,
       },
       {
         path: 'register',
-        element: <Register />,
+        Component: Register,
       },
       {
         path: 'users',
-        element: <Users />,
+        Component: Users,
+        HydrateFallback: HydrateFallback,
         loader: usersLoader,
       },
     ],

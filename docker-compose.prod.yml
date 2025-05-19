@@ -60,10 +60,30 @@ services:
       # traefik.http.routers.dashboard.middlewares: auth
       # traefik.http.middlewares.auth.basicauth.users: admin:$$apr1$$8EVjn/nj$$GiLUZqcbueTFeD23SuB6x0 # username: admin, password: admin
 
+  db:
+    image: mongo:latest
+    volumes:
+      - app-db-data:/data/db
+    env_file:
+      - .env
+    ports:
+      - "${MONGO_PORT}:${MONGO_PORT}"
+    environment:
+      - "MONGO_INITDB_DATABASE=${MONGO_DB}"
+      - "MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}"
+      - "MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}"
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
   backend:
     image: '${DOCKER_PACKAGE_REPOSITORY?Variable not set}/${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     env_file:
       - .env
     environment:
@@ -79,19 +99,6 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.tls=true
       - traefik.http.routers.${STACK_NAME?Variable not set}-backend-http.tls.certresolver=le
       # - traefik.http.services.${STACK_NAME?Variable not set}-backend.loadbalancer.server.port=80
-
-  db:
-    image: mongo:latest
-    volumes:
-      - app-db-data:/data/db
-    env_file:
-      - .env
-    ports:
-      - "${MONGO_PORT}:${MONGO_PORT}"
-    environment:
-      - "MONGO_INITDB_DATABASE=${MONGO_DB}"
-      - "MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}"
-      - "MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}"
 
   frontend:
     image: '${DOCKER_PACKAGE_REPOSITORY?Variable not set}/${DOCKER_IMAGE_FRONTEND?Variable not set}:${TAG-latest}'

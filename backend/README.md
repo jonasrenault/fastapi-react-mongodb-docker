@@ -4,26 +4,22 @@ This directory contains the backend API app. It is built with [FastAPI](https://
 
 ## Requirements
 
-* [Poetry](https://python-poetry.org/) for Python package and environment management.
+* [uv](https://docs.astral.sh/uv/) for Python package and environment management.
 * A [MongoDB](https://www.mongodb.com/) database for persistence.
 
 ## Install
 
-The project uses poetry to manage dependencies and run the backend application. You can use an other tool to manage your virtual environment, such as `pip` or [uv](https://docs.astral.sh/uv/), but you'll need to extract the dependencies from the [pyproject.toml](./pyproject.toml) file.
-
-If using poetry, for convenience, run `poetry config virtualenvs.in-project true` before installing depencies. This will install the dependencies in the project directory and make it easier to manage in vscode.
-
-You can then install the dependencies with `poetry install --with dev`.
+The project uses [uv](https://docs.astral.sh/uv/) to manage dependencies and run the backend application. You can install the project and its dependencies with `uv sync`.
 
 ## Running the server
 
 To start a development server, run
 
 ```console
-poetry run fastapi dev app/main.py
+uv run fastapi dev app/main.py
 ```
 
-from the `backend` directory (remove the `poetry run` prefix if using another dependency management tool).
+from the `backend` directory (remove the `uv run` prefix if using another dependency management tool).
 
 This will start a server running on `http://127.0.0.1:8000`. The API will be available on the API's base prefix, which by default is `/api/v1`.
 
@@ -36,7 +32,7 @@ Navigate to `http://localhost:8000/redoc` to access the API's alternative doc bu
 Run
 
 ```console
-poetry run pytest
+uv run pytest
 ```
 
 to run the unit tests for the backend app.

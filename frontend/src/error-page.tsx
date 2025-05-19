@@ -1,6 +1,6 @@
 import { Button, Card, CardActions, CardContent, Typography } from '@mui/material'
-import Grid from '@mui/material/Grid2'
-import { isRouteErrorResponse, Link as RouterLink, useRouteError } from 'react-router-dom'
+import Grid from '@mui/material/Grid'
+import { isRouteErrorResponse, Link as RouterLink, useRouteError } from 'react-router'
 
 interface Error {
   status: number
