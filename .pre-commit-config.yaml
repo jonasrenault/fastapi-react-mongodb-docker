@@ -17,9 +17,7 @@ repos:
     hooks:
       - id: black
         name: black
-        args:
-          - "--config"
-          - "./backend/pyproject.toml"
+        args: [--config=./backend/pyproject.toml]
 
   # ruff - linting
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -27,6 +25,7 @@ repos:
     hooks:
       - id: ruff
         name: ruff
+        args: [--config=./backend/pyproject.toml]
 
   # mypy - lint-like type checking
   - repo: https://github.com/pre-commit/mirrors-mypy
@@ -34,5 +33,5 @@ repos:
     hooks:
       - id: mypy
         name: mypy
-        additional_dependencies: [types-requests==2.31.0.20240218]
+        additional_dependencies: [types-requests==2.32.0.20250515]
         args: [--config-file=./backend/pyproject.toml, --ignore-missing-imports]
