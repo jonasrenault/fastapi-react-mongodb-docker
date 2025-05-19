@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 from asgi_lifespan import LifespanManager
 from fastapi import FastAPI
-from httpx import AsyncClient
+from httpx import ASGITransport, AsyncClient
 
 from app.config.config import settings
 from app.main import app
@@ -31,7 +31,9 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
     """Async server client that handles lifespan and teardown"""
     with patch("app.config.config.settings.MONGO_DB", MONGO_TEST_DB):
         async with LifespanManager(app):
-            async with AsyncClient(app=app, base_url="http://test") as client:
+            async with AsyncClient(
+                transport=ASGITransport(app=app), base_url="http://test"
+            ) as client:
                 try:
                     yield client
                 finally:
