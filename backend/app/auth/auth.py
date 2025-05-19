@@ -75,12 +75,14 @@ def verify_password(password: str, hashed_pass: str) -> bool:
     return password_context.verify(password, hashed_pass)
 
 
-async def authenticate_user(email: str, password: str):
+async def authenticate_user(email: str, password: str) -> models.User | None:
     user = await models.User.find_one({"email": email})
     if not user:
-        return False
-    if not verify_password(password, user.hashed_password):
-        return False
+        return None
+    if user.hashed_password is None or not verify_password(
+        password, user.hashed_password
+    ):
+        return None
     return user
 
 
@@ -112,7 +114,7 @@ async def _get_current_user(token):
     )
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
-        userid: UUID = payload.get("sub")
+        userid: UUID | None = payload.get("sub")
         if userid is None:
             raise credentials_exception
         token_data = schemas.TokenPayload(uuid=userid)
