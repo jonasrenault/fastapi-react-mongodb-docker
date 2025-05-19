@@ -11,8 +11,8 @@ import {
   Link,
   Typography,
 } from '@mui/material'
-import Grid from '@mui/material/Grid2'
-import { useLoaderData } from 'react-router-dom'
+import Grid from '@mui/material/Grid'
+import { useLoaderData } from 'react-router'
 
 type Feature = {
   img: string

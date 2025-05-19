@@ -1,5 +1,5 @@
 import { Box, Toolbar } from '@mui/material'
-import { Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router'
 import TopMenuBar from '../components/TopMenuBar'
 
 export default function Root() {

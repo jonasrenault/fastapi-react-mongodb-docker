@@ -15,9 +15,9 @@ import {
   ListItemText,
   Paper,
 } from '@mui/material'
-import Grid from '@mui/material/Grid2'
+import Grid from '@mui/material/Grid'
 import { useState } from 'react'
-import { redirect, useLoaderData } from 'react-router-dom'
+import { redirect, useLoaderData } from 'react-router'
 import UserProfile from '../components/UserProfile'
 import { useAuth } from '../contexts/auth'
 import { useSnackBar } from '../contexts/snackbar'

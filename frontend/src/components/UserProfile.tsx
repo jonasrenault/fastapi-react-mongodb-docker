@@ -11,11 +11,11 @@ import {
   IconButton,
   TextField,
 } from '@mui/material'
-import Grid from '@mui/material/Grid2'
+import Grid from '@mui/material/Grid'
 import { AxiosError } from 'axios'
 import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import { useAuth } from '../contexts/auth'
 import { useSnackBar } from '../contexts/snackbar'
 import { User } from '../models/user'

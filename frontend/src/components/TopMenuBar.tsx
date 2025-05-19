@@ -15,7 +15,7 @@ import {
   Typography,
 } from '@mui/material'
 import * as React from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router'
 import { useAuth } from '../contexts/auth'
 
 export default function TopMenuBar() {
