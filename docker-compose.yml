@@ -42,11 +42,18 @@ services:
       - "MONGO_INITDB_DATABASE=${MONGO_DB}"
       - "MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}"
       - "MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}"
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   backend:
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     env_file:
       - .env
     ports:

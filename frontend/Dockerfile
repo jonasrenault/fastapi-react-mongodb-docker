@@ -1,4 +1,4 @@
-FROM node:21-slim as builder
+FROM node:22-slim as builder
 
 WORKDIR /app
 
@@ -21,7 +21,7 @@ ENV VITE_APP_ENV=${FRONTEND_ENV}
 RUN npm run build
 
 
-FROM nginx:1.23.1
+FROM nginx:1.28.0-alpine
 
 # Remove default nginx configuration
 RUN rm /etc/nginx/conf.d/*
